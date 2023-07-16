@@ -2,7 +2,33 @@
 
 public class AccountProcessor
 {
-	// ToDo Реализовать без копирования и боксинга
+	/// <summary>
+	/// Измененный метод подсчета
+	/// </summary>
+	public decimal CalculatePerformed(ref BankAccount bankAccount)
+	{
+		decimal decimalResultPart = decimal.Zero;
+		long longResultPart = 0L;
+
+		BankOperation last = bankAccount.LastOperation;
+		BankOperation previous = bankAccount.PreviousOperation;
+
+		for(int i = 0; i < 3; i++)
+		{
+			longResultPart += CalculatePerformedOperation(ref last) +
+			   CalculatePerformedOperation(ref previous) +
+			   CalculatePerformedOperation1(ref last) +
+			   CalculatePerformedOperation1(ref previous) +
+			   CalculatePerformedOperation2(ref last) +
+			   CalculatePerformedOperation2(ref previous);
+			decimalResultPart += CalculatePerformedOperation3(ref last) +
+			   CalculatePerformedOperation3(ref previous) +
+			   CalculatePerformedOperation3(ref bankAccount);
+        }
+
+        return decimalResultPart + longResultPart;
+	}
+	
 	public decimal Calculate(BankAccount bankAccount)
 	{
 		return CalculateOperation(bankAccount.LastOperation) +
@@ -42,25 +68,79 @@ public class AccountProcessor
 		return bankOperation.OperationInfo0;
 	}
 
+	/// <summary>
+	/// Измененный метод подсчета операции, изменен тип выходных данных
+	/// </summary>
+	/// <param name="bankOperation">Банковская операция по ссылке</param>
+	/// <returns>Результат подсчета операции</returns>
+	private long CalculatePerformedOperation(ref BankOperation bankOperation)
+	{
+		// Some calculation code
+		return bankOperation.OperationInfo0;
+	}
+
 	private decimal CalculateOperation1(BankOperation bankOperation)
 	{
 		// Some calculation code
 		return bankOperation.OperationInfo1;
 	}
 
-	private decimal CalculateOperation2(BankOperation bankOperation)
+    /// <summary>
+    /// Измененный метод подсчета операции, изменен тип выходных данных
+    /// </summary>
+    /// <param name="bankOperation">Банковская операция по ссылке</param>
+    /// <returns>Результат подсчета операции</returns>
+    private long CalculatePerformedOperation1(ref BankOperation bankOperation)
+    {
+        // Some calculation code
+        return bankOperation.OperationInfo1;
+    }
+
+    private decimal CalculateOperation2(BankOperation bankOperation)
 	{
 		// Some calculation code
 		return bankOperation.OperationInfo2;
 	}
 
-	private decimal CalculateOperation3(ITotalAmount bankOperation)
+    /// <summary>
+    /// Измененный метод подсчета операции, изменен тип выходных данных
+    /// </summary>
+    /// <param name="bankOperation">Банковская операция по ссылке</param>
+    /// <returns>Результат подсчета операции</returns>
+    private long CalculatePerformedOperation2(ref BankOperation bankOperation)
+    {
+        // Some calculation code
+        return bankOperation.OperationInfo2;
+    }
+
+    private decimal CalculateOperation3(ITotalAmount bankOperation)
 	{
 		// Some calculation code
 		return bankOperation.TotalAmount;
 	}
-}
 
+    /// <summary>
+    /// Измененный метод подсчета операции, изменен тип выходных данных
+    /// </summary>
+    /// <param name="bankOperation">Банковская операция по ссылке</param>
+    /// <returns>Результат подсчета операции</returns>
+    private decimal CalculatePerformedOperation3(ref BankOperation bankOperation)
+    {
+        // Some calculation code
+        return bankOperation.TotalAmount;
+    }
+
+    /// <summary>
+    /// Измененный метод подсчета операции, изменен тип выходных данных
+    /// </summary>
+    /// <param name="bankOperation">Банковский аккаунт по ссылке</param>
+    /// <returns>Результат подсчета операции</returns>
+    private decimal CalculatePerformedOperation3(ref BankAccount totalAmount)
+    {
+        // Some calculation code
+        return totalAmount.TotalAmount;
+    }
+}
 
 public struct BankAccount : ITotalAmount
 {
