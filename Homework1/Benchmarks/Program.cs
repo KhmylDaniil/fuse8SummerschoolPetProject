@@ -12,12 +12,6 @@ BenchmarkRunner.Run<StringInternBenchmark>();
 [RankColumn]
 public class StringInternBenchmark
 {
-    const string str1 = "Эри";
-    const string str2 = "югославский";
-    const string str3 = ">fym";
-    const string str4 = "повывезете";
-
-
     private readonly List<string> _words = new();
     public StringInternBenchmark()
     {
@@ -45,13 +39,13 @@ public class StringInternBenchmark
     //Эти факторы нужно учитывать для выбора решения в зависимости от логики поставленной задачи, возможно использование интернированного словаря даст выгоду потом.
     public IEnumerable<string> SampleData()
     {
-        yield return new StringBuilder("Чили").ToString();
-        yield return new StringBuilder("Юань").ToString();
-        yield return new StringBuilder("абарбанел").ToString();
-        yield return new StringBuilder("повестка").ToString();
-        yield return str1;
-        yield return str2;
-        yield return str3;
-        yield return str4;
+        yield return new StringBuilder("Чил").Append("и").ToString();
+        yield return new StringBuilder("Юа").Append("нь").ToString();
+        yield return new StringBuilder("абар").Append("банел").ToString();
+        yield return new StringBuilder("повест").Append("ка").ToString();
+        yield return "Эри";
+        yield return "югославский";
+        yield return ">fym";
+        yield return "повывезете";
     }
 }
