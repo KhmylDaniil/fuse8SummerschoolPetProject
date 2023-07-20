@@ -4,24 +4,32 @@ namespace Fuse8_ByteMinds.SummerSchool.Domain;
 
 public static class AssemblyHelpers
 {
-	/// <summary>
-	/// Получает информацию о базовых типах классов из namespace "Fuse8_ByteMinds.SummerSchool.Domain", у которых есть наследники.
-	/// </summary>
-	/// <remarks>
-	///	Информация возвращается только по самым базовым классам.
-	/// Информация о промежуточных базовых классах не возвращается
-	/// </remarks>
-	/// <returns>Список типов с количеством наследников</returns>
-	public static (string BaseTypeName, int InheritorCount)[] GetTypesWithInheritors()
+    /// <summary>
+    /// Получает информацию о базовых типах классов из namespace "Fuse8_ByteMinds.SummerSchool.Domain", у которых есть наследники.
+    /// </summary>
+    /// <remarks>
+    ///	Информация возвращается только по самым базовым классам.
+    /// Информация о промежуточных базовых классах не возвращается
+    /// </remarks>
+    /// <returns>Список типов с количеством наследников</returns>
+    public static (string BaseTypeName, int InheritorCount)[] GetTypesWithInheritors()
 	{
-		// Получаем все классы из текущей Assembly
 		var assemblyClassTypes = Assembly.GetAssembly(typeof(AssemblyHelpers))
 			!.DefinedTypes
 			.Where(p => p.IsClass);
 
-		// TODO Добавить реализацию
-		throw new NotImplementedException();
-	}
+		var namesArray = assemblyClassTypes.Select(p => p.Name).ToArray();
+
+		var onlyDerivedFromThisAssemblyClassTypesNamesArray = assemblyClassTypes
+			.Where(t => !t.IsAbstract)
+			.Select(type => GetBaseType(type)?.Name)
+			.Where(name => namesArray.Contains(name)).ToArray();
+
+		return onlyDerivedFromThisAssemblyClassTypesNamesArray
+			.Distinct()
+			.Select(x => (BaseTypeName: x, InheritorCount: onlyDerivedFromThisAssemblyClassTypesNamesArray.Count(y => y == x)))
+			.ToArray();
+    }
 
 	/// <summary>
 	/// Получает базовый тип для класса
