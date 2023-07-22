@@ -1,18 +1,5 @@
 ﻿namespace Fuse8_ByteMinds.SummerSchool.Domain;
 
-/// <summary>
-/// Контейнер для значения, с отложенным получением
-/// Вариант проще, проходящий тесты (Value создается при инициализации)
-/// </summary>
-//public class Lazy<TValue>
-//{
-//    public TValue? Value { get; private set; }
-
-//    public Lazy(Func<TValue> func)
-//    {
-//        Value = func.Invoke();
-//    }
-//}
 
 /// <summary>
 /// Вариант, который вызывает экшен при первом обращении к свойству Value (буквальное требование ДЗ)

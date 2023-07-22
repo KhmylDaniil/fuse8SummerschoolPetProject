@@ -16,9 +16,13 @@ public static class ExceptionHandler
             action();
             return null;
         }
-		catch (HttpRequestException ex)
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return "Ресурс не райден";
+        }
+        catch (HttpRequestException ex)
 		{
-			return ex.StatusCode == HttpStatusCode.NotFound ? "Ресурс не райден" : ex.StatusCode.ToString();
+			return ex.StatusCode.ToString();
 		}
 		catch (MoneyException ex)
 		{
@@ -47,7 +51,7 @@ public class MoneyException : Exception
 
 public class NotValidKopekCountException : MoneyException
 {
-	public NotValidKopekCountException()
+	public NotValidKopekCountException() : base()
 	{
         Message = "Количество копеек должно быть больше 0 и меньше 99";
     }

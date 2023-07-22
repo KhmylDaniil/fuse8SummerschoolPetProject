@@ -106,4 +106,19 @@ public class LazyTests
 		Assert.Null(secondValue);
 		Assert.Equal(expected: 1, actual: funcCallCount);
 	}
+
+    [Fact(DisplayName = "Value вызывает экшен для создание значения только при обращении")]
+    public void ValueCallFuncOnlyWhenCalled()
+    {
+        // Используем замыкание, чтобы подсчитать кол-во вызовов
+        int funcCallCount = 0;
+        var lazy = new Domain.Lazy<int>(() => ++funcCallCount);
+
+        Assert.Equal(expected: 0, actual: funcCallCount);
+
+        _ = lazy.Value;
+        _ = lazy.Value;
+
+        Assert.Equal(expected: 1, actual: funcCallCount);
+    }
 }
