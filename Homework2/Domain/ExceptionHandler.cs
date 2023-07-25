@@ -51,16 +51,16 @@ public class MoneyException : Exception
 
 public class NotValidKopekCountException : MoneyException
 {
-	public NotValidKopekCountException() : base()
+	public NotValidKopekCountException(string? message = null): base(message)
 	{
-        Message = "Количество копеек должно быть больше 0 и меньше 99";
+		Message = "Количество копеек должно быть больше 0 и меньше 99";
     }
 }
 
 public class NegativeRubleCountException : MoneyException
 {
-	public NegativeRubleCountException() : base()
-	{
+	public NegativeRubleCountException(string? message = null) : base(message)
+    {
 		Message = "Число рублей не может быть отрицательным";
     }
 }
