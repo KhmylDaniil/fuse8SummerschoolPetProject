@@ -29,8 +29,14 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <response code="200">
         /// Возвращает если удалось получить курс валюты
         /// </response>
-        /// <response code="429">
+        /// <response code="404">
+        /// Возвращает при неизвестном коде валюты
+        /// </response>
+        /// /// <response code="429">
         /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet]
@@ -45,8 +51,14 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <response code="200">
         /// Возвращает если удалось получить курс валюты
         /// </response>
-        /// <response code="429">
+        /// <response code="404">
+        /// Возвращает при неизвестном коде валюты
+        /// </response>
+        /// /// <response code="429">
         /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
@@ -80,8 +92,14 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <response code="200">
         /// Возвращает если удалось получить курс валюты
         /// </response>
-        /// <response code="429">
+        /// <response code="404">
+        /// Возвращает при неизвестном коде валюты
+        /// </response>
+        /// /// <response code="429">
         /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
         /// </response>
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
@@ -115,6 +133,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <response code="200">
         /// Возвращает если удалось получить настройки
         /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
