@@ -7,13 +7,9 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi;
 
 public class Startup
 {
-	public Startup(IConfiguration configuration)
-	{
-    }
-
 	public void ConfigureServices(IServiceCollection services)
 	{
-        services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
+		services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
 
 			// Добавляем глобальные настройки для преобразования Json
 			.AddJsonOptions(
@@ -62,15 +58,17 @@ public class Startup
     }
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-	{	
+	{
 		if (env.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(c => 
+		{
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
 			{
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
-        }
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+			});
+		}
+
+        app.UseMiddleware<LoggingMiddleware>();
 
         app.UseRouting()
             .UseEndpoints(endpoints => endpoints.MapControllers());
