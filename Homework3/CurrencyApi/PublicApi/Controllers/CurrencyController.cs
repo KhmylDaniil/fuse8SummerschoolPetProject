@@ -1,7 +1,5 @@
-﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Exceptions;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
 {
@@ -13,14 +11,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
     public class CurrencyController : ControllerBase
     {
         private readonly CurrencyHttpClient _httpClient;
-        private readonly CurrencySettings _settings;
 
-        public CurrencyController(CurrencyHttpClient httpClient, IConfiguration configuration)
-        {
-            _httpClient = httpClient;
-
-            _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
-        }
+        public CurrencyController(CurrencyHttpClient httpClient) => _httpClient = httpClient;
 
         /// <summary>
         /// Получить курс валюты по умолчанию
@@ -41,7 +33,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet]
         public async Task<GetCurrencyResponse> GetLatestDefaultCurrencyAsync(CancellationToken cancellationToken)
-            => await GetLatestAsync(_settings.DefaultCurrency, cancellationToken);
+            => await _httpClient.GetLatestAsync(null, cancellationToken);
 
         /// <summary>
         /// Получить курс валюты по коду
@@ -63,25 +55,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
         public async Task<GetCurrencyResponse> GetLatestAsync(string currencyCode, CancellationToken cancellationToken)
-        {
-            await CheckRequestLimit(cancellationToken);
-
-            var uriBuilder = new CurrencyApiUriBuilder(_settings);
-            uriBuilder.AddPath("latest");
-
-            currencyCode = currencyCode.ToUpper();
-            uriBuilder.AddQuery("currencies", currencyCode);
-
-            var response = await _httpClient.GetStringAsync(uriBuilder.ToString(), cancellationToken);
-
-            dynamic deserialisedObject = JObject.Parse(response);
-
-            return new GetCurrencyResponse()
-            {
-                Code = currencyCode,
-                Value = Math.Round((decimal)deserialisedObject.data[currencyCode].value, _settings.CurrencyRoundCount)
-            };
-        }
+            => await _httpClient.GetLatestAsync(currencyCode, cancellationToken);
 
         /// <summary>
         /// Получить курс валюты по коду с указанием даты актуальности
@@ -104,27 +78,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
         public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(string currencyCode, DateTime date, CancellationToken cancellationToken)
-        {
-            await CheckRequestLimit(cancellationToken);
-
-            var uriBuilder = new CurrencyApiUriBuilder(_settings);
-            uriBuilder.AddPath("historical");
-
-            currencyCode = currencyCode.ToUpper();
-            uriBuilder.AddQuery("currencies", currencyCode);
-            uriBuilder.AddQuery("date", date.ToString());
-
-            var response = await _httpClient.GetStringAsync(uriBuilder.ToString(), cancellationToken);
-
-            dynamic deserialisedObject = JObject.Parse(response);
-
-            return new GetCurrencyHistoricalResponse()
-            {
-                Code = currencyCode,
-                Value = Math.Round((decimal)deserialisedObject.data[currencyCode].value, _settings.CurrencyRoundCount),
-                Date = ((DateTime)deserialisedObject.meta.last_updated_at).Date.ToString("yyyy-mm-dd")
-            };
-        }
+            => await _httpClient.GetHistoricalAsync(currencyCode, date, cancellationToken);
 
         /// <summary>
         /// Запрос текущих настроек приложения
@@ -138,36 +92,6 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-        {
-            var uriBuilder = new CurrencyApiUriBuilder(_settings);
-            uriBuilder.AddPath("status");
-
-            var response = await _httpClient.GetStringAsync(uriBuilder.ToString(), cancellationToken);
-
-            dynamic deserialisedObject = JObject.Parse(response);
-
-            return new GetSettingsResponse()
-            {
-                DefaultCurrency = _settings.DefaultCurrency,
-                BaseCurrency = _settings.BaseCurrency,
-                RequestLimit = deserialisedObject.quotas.month.total,
-                RequestCount = deserialisedObject.quotas.month.used,
-                CurrencyRoundCount = _settings.CurrencyRoundCount,
-            };
-        }
-
-        /// <summary>
-        /// Метод проверки достижения лимита запросов в месяц
-        /// </summary>
-        /// <param name="cancellationToken">токен отмены</param>
-        /// <returns></returns>
-        /// <exception cref="ApiRequestLimitException">Ошибка исчерпания количества обращений к внешнему API</exception>
-        private async Task CheckRequestLimit(CancellationToken cancellationToken)
-        {
-            var requestLimitCheck = await GetSettingsAsync(cancellationToken);
-
-            if (requestLimitCheck.RequestCount >= _settings.MaxRequestsPerMonth)
-                throw new ApiRequestLimitException();
-        }
+            => await _httpClient.GetSettingsAsync(cancellationToken);
     }
 }

@@ -39,24 +39,5 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
                     break;
             }
         }
-
-        //public void OnException(ExceptionContext context)
-        //{
-        //    var exceptionCodeString = context.Exception.GetType().GetProperty("StatusCode").GetValue(context.Exception).ToString();
-
-        //    switch (exceptionCodeString)
-        //    {
-        //        case "TooManyRequests":
-        //            _logger.Error(context.Exception.Message, context.Exception);
-        //            break;
-        //        case "UnprocessableEntity":
-        //            context.Result = new ObjectResult(context.Exception.Message) { StatusCode = StatusCodes.Status404NotFound };
-        //            break;
-        //        default:
-        //            context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        //            _logger.Error(context.Exception.Message, context.Exception);
-        //            break;
-        //    }
-        //}
     }
 }

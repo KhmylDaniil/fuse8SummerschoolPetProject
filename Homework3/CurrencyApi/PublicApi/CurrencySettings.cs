@@ -21,11 +21,6 @@
         public int CurrencyRoundCount { get; init; }
 
         /// <summary>
-        /// Базовый адрес
-        /// </summary>
-        public string? BaseAddress { get; init; }
-
-        /// <summary>
         /// Апи ключ
         /// </summary>
         public string? ApiKey { get; init; }

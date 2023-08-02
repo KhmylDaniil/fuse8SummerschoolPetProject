@@ -7,11 +7,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi;
 
 public class Startup
 {
-	private readonly CurrencySettings _settings;
-
 	public Startup(IConfiguration configuration)
 	{
-        _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
     }
 
 	public void ConfigureServices(IServiceCollection services)
@@ -41,12 +38,7 @@ public class Startup
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);
 		});
 
-		services.AddHttpClient<CurrencyHttpClient>(x =>
-		{
-			x.DefaultRequestHeaders.Add("apikey",  _settings.ApiKey );
-			x.DefaultRequestHeaders.Add("base_currency", _settings.BaseCurrency);
-        })
-
+		services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
 			.AddAuditHandler(audit => audit
 			.IncludeRequestHeaders()
 			.IncludeRequestBody()

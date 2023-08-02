@@ -8,11 +8,11 @@
         /// <summary>
         /// Код валюты
         /// </summary>
-        public string? Code { get; init; }
+        public string code { get; init; }
 
         /// <summary>
         /// Текущий курс относительно базовой валюты
         /// </summary>
-        public decimal Value { get; init; }
+        public float value { get; init; }
     }
 }

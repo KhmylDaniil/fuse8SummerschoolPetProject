@@ -8,6 +8,6 @@
         /// <summary>
         /// Дата актуальности курса в формате yyyy-mm-dd
         /// </summary>
-        public string? Date { get; init; }
+        public string date { get; init; }
     }
 }
