@@ -29,7 +29,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         /// <exception cref="CurrencyNotFoundException">Исключение неподдерживаемого кода валюты</exception>
-        public async Task<string> GetStringAsync(string uri, CancellationToken cancellationToken)
+        public async Task<string> GetStringAsyncWithCheck(string uri, CancellationToken cancellationToken)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
             string url = $"latest?currencies={currencyCode.ToUpper()}" +
                 $"&base_currency={_settings.BaseCurrency}&apikey={_settings.ApiKey}";
 
-            var responseJson = await _httpClient.GetStringAsync(url, cancellationToken);
+            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseLatest>(responseJson);
 
@@ -83,7 +83,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
             string url = $"historical?currencies={currencyCode.ToUpper()}&date={date}" +
                 $"&base_currency={_settings.BaseCurrency}&apikey={_settings.ApiKey}";
 
-            var responseJson = await _httpClient.GetStringAsync(url, cancellationToken);
+            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseLatest>(responseJson);
 
@@ -104,7 +104,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
         {
             string url = $"status?apikey={_settings.ApiKey}";
 
-            var responseJson = await _httpClient.GetStringAsync(url, cancellationToken);
+            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseStatus>(responseJson);
 
