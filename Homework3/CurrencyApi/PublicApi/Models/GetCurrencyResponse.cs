@@ -1,4 +1,6 @@
-﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
 {
     /// <summary>
     /// Ответ на запрос курса валюты
@@ -8,11 +10,13 @@
         /// <summary>
         /// Код валюты
         /// </summary>
-        public string code { get; init; }
+        [JsonPropertyName("code")]
+        public string Code { get; init; }
 
         /// <summary>
         /// Текущий курс относительно базовой валюты
         /// </summary>
-        public float value { get; init; }
+        [JsonPropertyName("value")]
+        public float Value { get; init; }
     }
 }
