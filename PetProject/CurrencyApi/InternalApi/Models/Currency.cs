@@ -1,9 +1,9 @@
 ﻿namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models
 {
     /// <summary>
-    /// Ответ на запрос курса валюты
+    /// Данные о курсе валюты
     /// </summary>
-    public record GetCurrencyResponse
+    public record Currency
     {
         /// <summary>
         /// Код валюты

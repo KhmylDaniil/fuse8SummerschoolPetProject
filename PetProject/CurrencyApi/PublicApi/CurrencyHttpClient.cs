@@ -6,11 +6,16 @@ using System.Text.Json;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 {
+    /*
+     Больше не используется 
+     
+    
     /// <summary>
     /// Клиент для обращения к внешнему API курсов валюты https://api.currencyapi.com
     /// </summary>
     public class CurrencyHttpClient
     {
+        
         private readonly HttpClient _httpClient;
 
         private readonly CurrencySettings _settings;
@@ -130,6 +135,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 
             if (requestLimitCheck.RequestCount >= _settings.MaxRequestsPerMonth)
                 throw new ApiRequestLimitException();
-        }
+        }   
     }
+     */
 }

@@ -1,15 +1,18 @@
-﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Exceptions;
+﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
+using Fuse8_ByteMinds.SummerSchool.InternalApi.Exceptions;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
+using InternalApi.Interfaces;
+using InternalApi.Models;
 using System.Net;
 using System.Text.Json;
 
-namespace Fuse8_ByteMinds.SummerSchool.InternalApi
+namespace InternalApi.Services
 {
     /// <summary>
     /// Клиент для обращения к внешнему API курсов валюты https://api.currencyapi.com
     /// </summary>
-    public class CurrencyHttpClient
+    public class CurrencyHttpClient : ICurrencyAPI
     {
         private readonly HttpClient _httpClient;
 
@@ -47,24 +50,43 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi
         /// <param name="currencyCode">Код валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public async Task<GetCurrencyResponse> GetLatestAsync(string? currencyCode, CancellationToken cancellationToken)
+        public async Task<Currency> GetLatestAsync(string? currencyCode, CancellationToken cancellationToken)
         {
             await CheckRequestLimit(cancellationToken);
 
-            currencyCode = currencyCode is null? _settings.DefaultCurrency : currencyCode.ToUpper();
+            currencyCode = currencyCode is null ? _settings.DefaultCurrency : currencyCode.ToUpper();
 
             string url = $"latest?currencies={currencyCode.ToUpper()}" +
                 $"&base_currency={_settings.BaseCurrency}&apikey={_settings.ApiKey}";
 
             var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
-            var response = JsonSerializer.Deserialize<ExternalApiResponseLatest>(responseJson);
+            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
-            return new GetCurrencyResponse()
+            return new Currency()
             {
                 code = currencyCode,
                 value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount)
             };
+        }
+
+        /// <summary>
+        /// Метод обращения ко всем текущим курсам валют
+        /// </summary>
+        /// <param name="baseCurrency">Базовая валюта, к которой считаются курсы</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Текущие курсы всех валют</returns>
+        public async Task<Currency[]> GetAllCurrentCurrenciesAsync(string baseCurrency, CancellationToken cancellationToken)
+        {
+            await CheckRequestLimit(cancellationToken);
+
+            string url = $"latest?base_currency={baseCurrency.ToUpper()}&apikey={_settings.ApiKey}";
+
+            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
+
+            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
+
+            return response.data.Values.ToArray();
         }
 
         /// <summary>
@@ -74,7 +96,7 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi
         /// <param name="date">Дата</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(string currencyCode, DateTime date, CancellationToken cancellationToken)
+        public async Task<CurrencyOnDate> GetHistoricalAsync(string currencyCode, DateTime date, CancellationToken cancellationToken)
         {
             await CheckRequestLimit(cancellationToken);
 
@@ -85,14 +107,41 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi
 
             var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
-            var response = JsonSerializer.Deserialize<ExternalApiResponseLatest>(responseJson);
+            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
-            return new GetCurrencyHistoricalResponse()
+            return new CurrencyOnDate()
             {
                 code = currencyCode,
                 value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount),
                 date = DateTime.Parse(response.meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
             };
+        }
+
+        /// <summary>
+        /// Метод получения всех курсов валют на указанную дату
+        /// </summary>
+        /// <param name="baseCurrency">Базовая валюта, к которой считаются курсы</param>
+        /// <param name="date">Дата актуальности курсов валют</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Курсы валют на актуальную дату</returns>
+        public async Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(string baseCurrency, DateOnly date, CancellationToken cancellationToken)
+        {
+            await CheckRequestLimit(cancellationToken);
+
+            string url = $"historical?&date={date}" +
+                $"&base_currency={baseCurrency.ToUpper()}&apikey={_settings.ApiKey}";
+
+            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
+
+            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
+
+            CurrenciesOnDate result = new()
+            {
+                Date = DateTime.Parse(response.meta["last_updated_at"], styles: System.Globalization.DateTimeStyles.AdjustToUniversal),
+                Currencies = response.data.Values.ToArray()
+            };
+
+            return result;
         }
 
         /// <summary>

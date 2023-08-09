@@ -1,5 +1,7 @@
 ﻿using Audit.Core;
 using Audit.Http;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -7,8 +9,15 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi;
 
 public class Startup
 {
-	public void ConfigureServices(IServiceCollection services)
-	{
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+	{	
 		services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
 
 			// Добавляем глобальные настройки для преобразования Json
@@ -34,13 +43,13 @@ public class Startup
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);
 		});
 
-		services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
-			.AddAuditHandler(audit => audit
-			.IncludeRequestHeaders()
-			.IncludeRequestBody()
-			.IncludeResponseHeaders()
-			.IncludeResponseBody()
-			.IncludeContentHeaders());
+		//services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
+		//	.AddAuditHandler(audit => audit
+		//	.IncludeRequestHeaders()
+		//	.IncludeRequestBody()
+		//	.IncludeResponseHeaders()
+		//	.IncludeResponseBody()
+		//	.IncludeContentHeaders());
 
 		Configuration.Setup().UseSerilog(config => config.Message(
 			auditEvent =>
@@ -55,6 +64,14 @@ public class Startup
 				}
                 return auditEvent.ToJson();
             }));
+
+		services.AddGrpcClient<GrpcDocument.GrpcDocumentClient>(c =>
+		{
+			c.Address = new Uri(_configuration.GetValue<string>("GrpcServiceAddress"));
+		})
+			.AddAuditHandler(a => a.IncludeRequestBody());
+
+		services.AddTransient<IGrpcClient, GrpcClient>();
     }
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

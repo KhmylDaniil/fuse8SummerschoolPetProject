@@ -1,0 +1,50 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Fuse8_ByteMinds.SummerSchool.PublicApi";
+
+import "google/protobuf/timestamp.proto";
+
+// The service definition.
+service GrpcDocument {
+  // Получить курс валюты по коду
+  rpc GetLatestAsync (CurrencyRequest) returns (CurrencyResponse);
+
+  rpc GetHistoricalAsync (CurrencyRequestWithDate) returns (CurrencyResponse);
+
+  rpc GetSettingsAsync (SettingsRequest) returns (SettingsResponse);
+}
+
+// Код валюты.
+message CurrencyRequest {
+  CurrencyCode currencyCode = 1; //код валюты
+}
+
+// Ответ на запрос валюты по коду.
+message CurrencyResponse {
+  CurrencyCode currencyCode = 1; //код валюты
+  float value = 2; //курс валюты
+}
+
+// Код валюты на дату
+message CurrencyRequestWithDate {
+  CurrencyCode currencyCode = 1; //код валюты
+  google.protobuf.Timestamp date = 2; //дата актуальности курса валюты
+}
+
+//метод не принимает параметры
+message SettingsRequest{}
+
+// ответ на запрос настроек приложения
+message SettingsResponse {
+    string baseCurrency = 1; //Базовая валюта, относительно которой считается курс
+    bool remainingRequests = 2; //остались ли еще запросы
+}
+
+//код валюты
+enum CurrencyCode
+{
+    USD = 0;
+    RUB = 1;
+    EUR = 2;
+    BYN = 3;
+}

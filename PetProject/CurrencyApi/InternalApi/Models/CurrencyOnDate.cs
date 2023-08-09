@@ -3,7 +3,7 @@
     /// <summary>
     /// Ответ на запрос курса валюты с указанием даты актуальности курса
     /// </summary>
-    public record GetCurrencyHistoricalResponse : GetCurrencyResponse
+    public record CurrencyOnDate : Currency
     {
         /// <summary>
         /// Дата актуальности курса в формате yyyy-mm-dd

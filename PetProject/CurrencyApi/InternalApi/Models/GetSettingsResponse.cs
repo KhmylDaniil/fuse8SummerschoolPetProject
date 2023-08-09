@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models
 {
     /// <summary>
@@ -10,12 +9,12 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models
         /// <summary>
         /// Текущий курс валют по умолчанию из конфигурации
         /// </summary>
-        public string? DefaultCurrency { get; init; }
+        public string DefaultCurrency { get; init; }
 
         /// <summary>
         /// Базовая валюта, относительно которой считается курс
         /// </summary>
-        public string? BaseCurrency { get; init; }
+        public string BaseCurrency { get; init; }
 
         /// <summary>
         /// Общее количество доступных запросов, полученное от внешнего API (quotas->month->total)

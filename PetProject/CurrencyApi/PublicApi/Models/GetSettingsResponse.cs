@@ -18,14 +18,9 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
         public string? BaseCurrency { get; init; }
 
         /// <summary>
-        /// Общее количество доступных запросов, полученное от внешнего API (quotas->month->total)
+        /// Доступны ли новые запросы
         /// </summary>
-        public int RequestLimit { get; init; }
-
-        /// <summary>
-        /// Количество использованных запросов, полученное от внешнего API (quotas->month->used)
-        /// </summary>
-        public int RequestCount { get; init; }
+        public bool NewRequestsAvailable { get; init; }
 
         /// <summary>
         /// Количество знаков после запятой, до которого следует округлять значение курса валют

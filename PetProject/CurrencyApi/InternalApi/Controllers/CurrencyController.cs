@@ -1,39 +1,22 @@
-﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
+﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
+using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
+using InternalApi.Interfaces;
+using InternalApi.Models;
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Controllers
+namespace InternalApi.Controllers
 {
     /// <summary>
     /// Методы для обращения к внешнему API https://api.currencyapi.com
     /// </summary>
-    [Route("api/[controller]/")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CurrencyController : ControllerBase
     {
-        private readonly CurrencyHttpClient _httpClient;
+        private readonly ICachedCurrencyAPI _cachedCurrencyAPI;
 
-        public CurrencyController(CurrencyHttpClient httpClient) => _httpClient = httpClient;
-
-        /// <summary>
-        /// Получить курс валюты по умолчанию
-        /// </summary>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <response code="200">
-        /// Возвращает если удалось получить курс валюты
-        /// </response>
-        /// <response code="404">
-        /// Возвращает при неизвестном коде валюты
-        /// </response>
-        /// /// <response code="429">
-        /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
-        /// </response>
-        /// <response code="500">
-        /// Возвращает при иной ошибке
-        /// </response>
-        /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
-        [HttpGet]
-        public async Task<GetCurrencyResponse> GetLatestDefaultCurrencyAsync(CancellationToken cancellationToken)
-            => await _httpClient.GetLatestAsync(null, cancellationToken);
+        public CurrencyController(ICachedCurrencyAPI cachedCurrencyAPI) => _cachedCurrencyAPI = cachedCurrencyAPI;
 
         /// <summary>
         /// Получить курс валюты по коду
@@ -54,8 +37,13 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
-        public async Task<GetCurrencyResponse> GetLatestAsync(string currencyCode, CancellationToken cancellationToken)
-            => await _httpClient.GetLatestAsync(currencyCode, cancellationToken);
+        public async Task<CurrencyDTO> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        {
+            //НУЖНО РЕАЛИЗОВАТЬ ХЕЛСЧЕК
+
+
+            return await _cachedCurrencyAPI.GetCurrentCurrencyAsync(currencyCode, cancellationToken);
+        }
 
         /// <summary>
         /// Получить курс валюты по коду с указанием даты актуальности
@@ -77,8 +65,10 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
-        public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(string currencyCode, DateTime date, CancellationToken cancellationToken)
-            => await _httpClient.GetHistoricalAsync(currencyCode, date, cancellationToken);
+        public async Task<CurrencyDTO> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
+        {
+            return await _cachedCurrencyAPI.GetCurrencyOnDateAsync(currencyCode, date, cancellationToken);
+        }
 
         /// <summary>
         /// Запрос текущих настроек приложения
@@ -87,11 +77,19 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Controllers
         /// <response code="200">
         /// Возвращает если удалось получить настройки
         /// </response>
+        /// <response code="404">
+        /// Возвращает при неизвестном коде валюты
+        /// </response>
+        /// <response code="429">
+        /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
         /// <response code="500">
         /// Возвращает при иной ошибке
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-            => await _httpClient.GetSettingsAsync(cancellationToken);
+        {
+            return await _cachedCurrencyAPI.GetSettingsAsync(cancellationToken);
+        }
     }
 }

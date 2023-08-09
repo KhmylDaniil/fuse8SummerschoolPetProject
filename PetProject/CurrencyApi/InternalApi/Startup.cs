@@ -1,5 +1,8 @@
 ﻿using Audit.Core;
 using Audit.Http;
+using InternalApi.gRPC;
+using InternalApi.Interfaces;
+using InternalApi.Services;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -7,6 +10,13 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi;
 
 public class Startup
 {
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
@@ -34,6 +44,9 @@ public class Startup
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);
         });
 
+        services.AddTransient<ICurrencyAPI, CurrencyHttpClient>();
+        services.AddTransient<ICachedCurrencyAPI, CashedCurrencyService>();
+
         services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
             .AddAuditHandler(audit => audit
             .IncludeRequestHeaders()
@@ -55,6 +68,8 @@ public class Startup
                 }
                 return auditEvent.ToJson();
             }));
+
+        services.AddGrpc();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -70,7 +85,18 @@ public class Startup
 
         app.UseMiddleware<LoggingMiddleware>();
 
-        app.UseRouting()
-            .UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseWhen(predicate: context => context.Connection.LocalPort == _configuration.GetValue<int>("GrpcPort"),
+            configuration: grpcBuilder =>
+            {
+                grpcBuilder.UseRouting();
+                grpcBuilder.UseEndpoints(endpoints => endpoints.MapGrpcService<GrpcService>());
+            });
+
+        app.UseWhen(predicate: context => context.Connection.LocalPort == _configuration.GetValue<int>("ApiPort"),
+            configuration: apiBuilder =>
+            {
+                apiBuilder.UseRouting()
+                .UseEndpoints(endpoints => endpoints.MapControllers());
+            });
     }
 }
