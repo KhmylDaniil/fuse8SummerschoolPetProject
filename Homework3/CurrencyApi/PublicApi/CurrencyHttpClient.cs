@@ -1,6 +1,7 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Exceptions;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.ExternalApiResponseModels;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text.Json;
 
@@ -15,11 +16,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 
         private readonly CurrencySettings _settings;
 
-        public CurrencyHttpClient(HttpClient httpClient, IConfiguration configuration)
+        public CurrencyHttpClient(HttpClient httpClient, IOptionsSnapshot<CurrencySettings> settings)
         {
             _httpClient = httpClient;
 
-            _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
+            _settings = settings.Value;
         }
 
         /// <summary>
@@ -62,8 +63,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 
             return new GetCurrencyResponse()
             {
-                code = currencyCode,
-                value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount)
+                Code = currencyCode,
+                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount)
             };
         }
 
@@ -89,9 +90,9 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 
             return new GetCurrencyHistoricalResponse()
             {
-                code = currencyCode,
-                value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount),
-                date = DateTime.Parse(response.meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
+                Code = currencyCode,
+                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount),
+                Date = DateTime.Parse(response.Meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
             };
         }
 
@@ -112,8 +113,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
             {
                 DefaultCurrency = _settings.DefaultCurrency,
                 BaseCurrency = _settings.BaseCurrency,
-                RequestLimit = response.quotas["month"].total,
-                RequestCount = response.quotas["month"].used,
+                RequestLimit = response.Quotas["month"].Total,
+                RequestCount = response.Quotas["month"].Used,
                 CurrencyRoundCount = _settings.CurrencyRoundCount,
             };
         }
