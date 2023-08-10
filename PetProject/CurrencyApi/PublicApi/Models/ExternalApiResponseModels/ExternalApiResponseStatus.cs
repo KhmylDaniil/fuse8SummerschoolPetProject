@@ -1,16 +1,22 @@
-﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.ExternalApiResponseModels
+﻿using System.Text.Json.Serialization;
+
+namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.ExternalApiResponseModels
 {
     /// <summary>
     /// Модель для десериализации ответа на запрос статуса
     /// </summary>
     public class ExternalApiResponseStatus
     {
-        public Dictionary<string, Quota> quotas { get; set; }
+        [JsonPropertyName("quotas")]
+        public Dictionary<string, Quota> Quotas { get; set; }
 
         public class Quota
         {
-            public int total { get; set; }
-            public int used { get; set; }
+            [JsonPropertyName("total")]
+            public int Total { get; set; }
+
+            [JsonPropertyName("used")]
+            public int Used { get; set; }
         }
     }
 }

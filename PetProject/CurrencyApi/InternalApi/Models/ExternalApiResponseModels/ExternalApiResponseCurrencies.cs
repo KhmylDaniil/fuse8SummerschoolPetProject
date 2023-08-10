@@ -1,12 +1,16 @@
-﻿namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels
+﻿using System.Text.Json.Serialization;
+
+namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels
 {
     /// <summary>
     /// Модель для десериализации ответа на запрос курса валют
     /// </summary>
     public class ExternalApiResponseCurrencies
     {
-        public Dictionary<string, string> meta { get; set; }
+        [JsonPropertyName("meta")]
+        public Dictionary<string, string> Meta { get; set; }
 
-        public Dictionary<string, Currency> data { get; set; }
+        [JsonPropertyName("data")]
+        public Dictionary<string, Currency> Data { get; set; }
     }
 }

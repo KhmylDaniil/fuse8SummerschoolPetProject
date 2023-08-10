@@ -4,6 +4,7 @@ using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using InternalApi.Interfaces;
 using InternalApi.Models;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text.Json;
 
@@ -18,11 +19,11 @@ namespace InternalApi.Services
 
         private readonly CurrencySettings _settings;
 
-        public CurrencyHttpClient(HttpClient httpClient, IConfiguration configuration)
+        public CurrencyHttpClient(HttpClient httpClient, IOptionsSnapshot<CurrencySettings> settings)
         {
             _httpClient = httpClient;
 
-            _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
+            _settings = settings.Value;
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace InternalApi.Services
             return new Currency()
             {
                 code = currencyCode,
-                value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount)
+                value = (float)Math.Round(response.Data[currencyCode].value, _settings.CurrencyRoundCount)
             };
         }
 
@@ -86,7 +87,7 @@ namespace InternalApi.Services
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
-            return response.data.Values.ToArray();
+            return response.Data.Values.ToArray();
         }
 
         /// <summary>
@@ -112,8 +113,8 @@ namespace InternalApi.Services
             return new CurrencyOnDate()
             {
                 code = currencyCode,
-                value = (float)Math.Round(response.data[currencyCode].value, _settings.CurrencyRoundCount),
-                date = DateTime.Parse(response.meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
+                value = (float)Math.Round(response.Data[currencyCode].value, _settings.CurrencyRoundCount),
+                date = DateTime.Parse(response.Meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
             };
         }
 
@@ -137,8 +138,8 @@ namespace InternalApi.Services
 
             CurrenciesOnDate result = new()
             {
-                Date = DateTime.Parse(response.meta["last_updated_at"], styles: System.Globalization.DateTimeStyles.AdjustToUniversal),
-                Currencies = response.data.Values.ToArray()
+                Date = DateTime.Parse(response.Meta["last_updated_at"], styles: System.Globalization.DateTimeStyles.AdjustToUniversal),
+                Currencies = response.Data.Values.ToArray()
             };
 
             return result;
@@ -161,8 +162,8 @@ namespace InternalApi.Services
             {
                 DefaultCurrency = _settings.DefaultCurrency,
                 BaseCurrency = _settings.BaseCurrency,
-                RequestLimit = response.quotas["month"].total,
-                RequestCount = response.quotas["month"].used,
+                RequestLimit = response.Quotas["month"].Total,
+                RequestCount = response.Quotas["month"].Used,
                 CurrencyRoundCount = _settings.CurrencyRoundCount,
             };
         }

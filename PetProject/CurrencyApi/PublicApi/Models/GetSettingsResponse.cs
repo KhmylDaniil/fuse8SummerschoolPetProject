@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
 {
     /// <summary>

@@ -17,8 +17,10 @@ public class Startup
     }
 
     public void ConfigureServices(IServiceCollection services)
-	{	
-		services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
+	{
+        services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
+
+        services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
 
 			// Добавляем глобальные настройки для преобразования Json
 			.AddJsonOptions(
@@ -42,14 +44,6 @@ public class Startup
 
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);
 		});
-
-		//services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
-		//	.AddAuditHandler(audit => audit
-		//	.IncludeRequestHeaders()
-		//	.IncludeRequestBody()
-		//	.IncludeResponseHeaders()
-		//	.IncludeResponseBody()
-		//	.IncludeContentHeaders());
 
 		Configuration.Setup().UseSerilog(config => config.Message(
 			auditEvent =>

@@ -29,5 +29,10 @@
         /// Максимальное количество запросов в месяц
         /// </summary>
         public int MaxRequestsPerMonth { get; init; }
+
+        /// <summary>
+        /// Адрес внешнего апи
+        /// </summary>
+        public string BaseAddress { get; init; }
     }
 }

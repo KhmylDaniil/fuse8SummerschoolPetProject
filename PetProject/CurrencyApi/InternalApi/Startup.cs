@@ -19,6 +19,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
+
         services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
 
             // Добавляем глобальные настройки для преобразования Json
@@ -47,7 +49,8 @@ public class Startup
         services.AddTransient<ICurrencyAPI, CurrencyHttpClient>();
         services.AddTransient<ICachedCurrencyAPI, CashedCurrencyService>();
 
-        services.AddHttpClient<CurrencyHttpClient>(x => x.BaseAddress = new Uri("https://api.currencyapi.com/v3/"))
+        services.AddHttpClient<CurrencyHttpClient>(x =>
+            x.BaseAddress = new Uri(_configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>().BaseAddress))
             .AddAuditHandler(audit => audit
             .IncludeRequestHeaders()
             .IncludeRequestBody()

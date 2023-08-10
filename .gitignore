@@ -9,7 +9,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-[Cc]ache/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -397,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+PetProject/CurrencyApi/Cache/*.*

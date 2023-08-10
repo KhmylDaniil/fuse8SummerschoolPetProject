@@ -2,6 +2,7 @@
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Options;
 using Enum = System.Enum;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
@@ -14,10 +15,10 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         private readonly GrpcDocument.GrpcDocumentClient _grpcClient;
         private readonly CurrencySettings _settings;
 
-        public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient, IConfiguration configuration)
+        public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient, IOptionsSnapshot<CurrencySettings> settings)
         {
             _grpcClient = grpcClient;
-            _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
+            _settings = settings.Value;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
             var currencyRequest = new CurrencyRequest { CurrencyCode = output };
             var response = await _grpcClient.GetLatestAsyncAsync(currencyRequest, cancellationToken: cancellationToken);
 
-            return new GetCurrencyResponse { code = Enum.GetName(response.CurrencyCode), value = response.Value};
+            return new GetCurrencyResponse { Code = Enum.GetName(response.CurrencyCode), Value = response.Value};
         }
 
         /// <summary>
@@ -62,9 +63,9 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
 
             return new GetCurrencyHistoricalResponse
             {
-                code = Enum.GetName(response.CurrencyCode),
-                value = response.Value,
-                date = date.ToString("yyyy-MM-dd")
+                Code = Enum.GetName(response.CurrencyCode),
+                Value = response.Value,
+                Date = date.ToString("yyyy-MM-dd")
             };
         }
 
