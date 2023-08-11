@@ -39,9 +39,9 @@ namespace InternalApi.Services
 
             await SaveCacheAsync(dataToSave);
 
-            var currencyFromExternalApi = dataToSave.Currencies.FirstOrDefault(c => c.code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
+            var currencyFromExternalApi = dataToSave.Currencies.FirstOrDefault(c => c.Code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
 
-            return new CurrencyDTO(currencyCode, GetRounded(currencyFromExternalApi.value));
+            return new CurrencyDTO(currencyCode, GetRounded(currencyFromExternalApi.Value));
         }
 
         /// <summary>
@@ -67,9 +67,9 @@ namespace InternalApi.Services
 
             await SaveCacheAsync(dataToSave);
 
-            var currencyFromExternalApi = result.FirstOrDefault(c => c.code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
+            var currencyFromExternalApi = result.FirstOrDefault(c => c.Code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
 
-            return new CurrencyDTO(currencyCode, GetRounded(currencyFromExternalApi.value));
+            return new CurrencyDTO(currencyCode, GetRounded(currencyFromExternalApi.Value));
         }
 
         /// <summary>
@@ -149,9 +149,9 @@ namespace InternalApi.Services
 
             var cachedInfo = JsonSerializer.Deserialize<Currency[]>(json);
 
-            var result = cachedInfo.FirstOrDefault(c => c.code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
+            var result = cachedInfo.FirstOrDefault(c => c.Code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase));
 
-            return new CurrencyDTO(currencyCode, GetRounded(result.value));
+            return new CurrencyDTO(currencyCode, GetRounded(result.Value));
         }
 
         /// <summary>

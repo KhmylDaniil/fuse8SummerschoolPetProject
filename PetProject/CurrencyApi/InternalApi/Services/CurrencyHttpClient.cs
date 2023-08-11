@@ -66,8 +66,8 @@ namespace InternalApi.Services
 
             return new Currency()
             {
-                code = currencyCode,
-                value = (float)Math.Round(response.Data[currencyCode].value, _settings.CurrencyRoundCount)
+                Code = currencyCode,
+                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount)
             };
         }
 
@@ -112,9 +112,9 @@ namespace InternalApi.Services
 
             return new CurrencyOnDate()
             {
-                code = currencyCode,
-                value = (float)Math.Round(response.Data[currencyCode].value, _settings.CurrencyRoundCount),
-                date = DateTime.Parse(response.Meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
+                Code = currencyCode,
+                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount),
+                Date = DateTime.Parse(response.Meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
             };
         }
 

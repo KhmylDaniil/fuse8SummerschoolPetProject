@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace InternalApi.Controllers
 {
     /// <summary>
-    /// Методы для обращения к внешнему API https://api.currencyapi.com
+    /// Контроллер-копия gRPC сервиса
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
