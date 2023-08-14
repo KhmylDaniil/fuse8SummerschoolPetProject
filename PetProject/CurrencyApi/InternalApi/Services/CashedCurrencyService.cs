@@ -62,7 +62,7 @@ namespace InternalApi.Services
 
             CurrenciesOnDate dataToSave = new()
             {
-                Date = DateTime.Now,
+                Date = DateTimeOffset.Now,
                 Currencies = result
             };
 
@@ -116,7 +116,7 @@ namespace InternalApi.Services
 
             var lastFile = files.MaxBy(f => f.Name);
 
-            if (TryParseDateTimeFromFileName(lastFile, out DateTime output) && DateTime.Now - output <= new TimeSpan(2, 0, 0))
+            if (TryParseDateTimeFromFileName(lastFile, out DateTimeOffset output) && DateTimeOffset.Now - output <= new TimeSpan(2, 0, 0))
             {
                 return await LoadCache(currencyCode, lastFile.FullName);
             }
@@ -137,7 +137,7 @@ namespace InternalApi.Services
 
             var lastFile = filesOnData.MaxBy(f => f.Name);
 
-            if (TryParseDateTimeFromFileName(lastFile, out DateTime output))
+            if (TryParseDateTimeFromFileName(lastFile, out DateTimeOffset output))
             {
                 return await LoadCache(currencyCode, lastFile.FullName);
             }
@@ -169,14 +169,14 @@ namespace InternalApi.Services
         /// <param name="file">файл</param>
         /// <param name="output">дата и время</param>
         /// <returns>Удалось преобразовать</returns>
-        private static bool TryParseDateTimeFromFileName(FileInfo? file, out DateTime output)
+        private static bool TryParseDateTimeFromFileName(FileInfo? file, out DateTimeOffset output)
         {
-            bool result = DateTime.TryParseExact(
-                s: file?.Name[..^4],
+            bool result = DateTimeOffset.TryParseExact(
+                input: file?.Name[..^4],
                 format: "yyyy-MM-dd-HH-mm-ss",
-                provider: System.Globalization.CultureInfo.InvariantCulture,
-                style: System.Globalization.DateTimeStyles.None,
-                result: out DateTime innerOutput);
+                formatProvider: System.Globalization.CultureInfo.InvariantCulture,
+                styles: System.Globalization.DateTimeStyles.None,
+                result: out DateTimeOffset innerOutput);
 
             output = innerOutput;
             return result;

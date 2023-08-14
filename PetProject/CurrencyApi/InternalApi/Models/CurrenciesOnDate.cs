@@ -10,7 +10,7 @@ namespace InternalApi.Models
         /// <summary>
         /// Дата актуальности курсов валют
         /// </summary>
-        public DateTime Date { get; init; }
+        public DateTimeOffset Date { get; init; }
 
         /// <summary>
         /// Курсы валют
