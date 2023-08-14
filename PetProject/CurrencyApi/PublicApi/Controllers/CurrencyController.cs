@@ -89,10 +89,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <response code="200">
-        /// Возвращает если удалось получить настройки
+        /// Возвращает если удалось получить настройки из внешнего апи
         /// </response>
         /// <response code="500">
         /// Возвращает при иной ошибке
+        /// </response>
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)

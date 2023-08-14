@@ -38,12 +38,7 @@ namespace InternalApi.Controllers
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
         public async Task<CurrencyDTO> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
-        {
-            //НУЖНО РЕАЛИЗОВАТЬ ХЕЛСЧЕК
-
-
-            return await _cachedCurrencyAPI.GetCurrentCurrencyAsync(currencyCode, cancellationToken);
-        }
+            => await _cachedCurrencyAPI.GetCurrentCurrencyAsync(currencyCode, cancellationToken);
 
         /// <summary>
         /// Получить курс валюты по коду с указанием даты актуальности
@@ -57,7 +52,7 @@ namespace InternalApi.Controllers
         /// <response code="404">
         /// Возвращает при неизвестном коде валюты
         /// </response>
-        /// /// <response code="429">
+        /// <response code="429">
         /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
         /// </response>
         /// <response code="500">
@@ -66,30 +61,30 @@ namespace InternalApi.Controllers
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
         public async Task<CurrencyDTO> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
-        {
-            return await _cachedCurrencyAPI.GetCurrencyOnDateAsync(currencyCode, date, cancellationToken);
-        }
+            => await _cachedCurrencyAPI.GetCurrencyOnDateAsync(currencyCode, date, cancellationToken);
 
         /// <summary>
         /// Запрос текущих настроек приложения
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <response code="200">
-        /// Возвращает если удалось получить настройки
-        /// </response>
-        /// <response code="404">
-        /// Возвращает при неизвестном коде валюты
-        /// </response>
-        /// <response code="429">
-        /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// Возвращает если удалось получить настройки из внешнего апи
         /// </response>
         /// <response code="500">
         /// Возвращает при иной ошибке
+        /// </response>
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-        {
-            return await _cachedCurrencyAPI.GetSettingsAsync(cancellationToken);
-        }
+            => await _cachedCurrencyAPI.GetSettingsAsync(cancellationToken);
+
+        /// <summary>
+        /// Проверка связи с внешним апи
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Ответ на хелчек</returns>
+        [HttpGet("Healthcheck")]
+        public async Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
+            => await _cachedCurrencyAPI.HealthCheck(cancellationToken);
     }
 }

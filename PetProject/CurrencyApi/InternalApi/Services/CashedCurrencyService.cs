@@ -2,6 +2,7 @@
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using InternalApi.Interfaces;
 using InternalApi.Models;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace InternalApi.Services
@@ -15,10 +16,10 @@ namespace InternalApi.Services
         private readonly CurrencySettings _settings;
         private static readonly string _basePath = $"D:\\source\\fuse8homework\\PetProject\\CurrencyApi\\Cache\\";
 
-        public CashedCurrencyService(CurrencyHttpClient currencyAPI, IConfiguration configuration)
+        public CashedCurrencyService(CurrencyHttpClient currencyAPI, IOptionsSnapshot<CurrencySettings> settings)
         {
             _currencyAPI = currencyAPI;
-            _settings = configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>();
+            _settings = settings.Value;
         }
 
         /// <summary>
@@ -79,6 +80,14 @@ namespace InternalApi.Services
         /// <returns>Настройки приложения</returns>
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
             => await _currencyAPI.GetSettingsAsync(cancellationToken);
+
+        /// <summary>
+        /// Проверка связи с внешним апи
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Ответ на хелчек</returns>
+        public Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
+            => _currencyAPI.HealthCheck(cancellationToken);
 
         /// <summary>
         /// Сохранение кэша в файл

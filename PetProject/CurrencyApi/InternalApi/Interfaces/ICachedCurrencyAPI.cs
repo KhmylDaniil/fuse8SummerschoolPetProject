@@ -29,5 +29,12 @@ namespace InternalApi.Interfaces
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Настройки приложения</returns>
         Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Проверка связи с внешним апи
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Ответ на хелчек</returns>
+        Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken);
     }
 }

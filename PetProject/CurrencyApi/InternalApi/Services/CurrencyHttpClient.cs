@@ -146,6 +146,26 @@ namespace InternalApi.Services
         }
 
         /// <summary>
+        /// Проверка связи с внешним апи
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Ответ на хелчек</returns>
+        public async Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
+        {
+            string url = $"status?apikey={_settings.ApiKey}";
+
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+
+            var result = new HealthCheckResponse
+            {
+                CheckedOn = DateTimeOffset.Now,
+                Status = response.IsSuccessStatusCode ? HealthCheckResponse.CheckStatus.Ok : HealthCheckResponse.CheckStatus.Failed
+            };
+
+            return result;
+        }
+
+        /// <summary>
         /// Метод вызова настроек приложения
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
