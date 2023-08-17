@@ -1,8 +1,11 @@
 ﻿using Audit.Core;
 using Audit.Http;
+using InternalApi;
 using InternalApi.gRPC;
 using InternalApi.Interfaces;
 using InternalApi.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -48,6 +51,17 @@ public class Startup
 
         services.AddTransient<ICurrencyAPI, CurrencyHttpClient>();
         services.AddTransient<ICachedCurrencyAPI, CashedCurrencyService>();
+
+        services.AddDbContext<AppDbContext>(o =>
+        {
+            o.UseNpgsql(
+                connectionString: _configuration.GetConnectionString("Default"),
+                npgsqlOptionsAction: sqlOptionsBuilder =>
+                {
+                    sqlOptionsBuilder.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "cur");
+                })
+            .UseSnakeCaseNamingConvention();
+        });
 
         services.AddHttpClient<CurrencyHttpClient>(x =>
             x.BaseAddress = new Uri(_configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>().BaseAddress))
