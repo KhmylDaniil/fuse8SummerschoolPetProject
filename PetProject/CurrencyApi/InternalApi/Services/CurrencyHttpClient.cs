@@ -13,7 +13,7 @@ namespace InternalApi.Services
     /// <summary>
     /// Клиент для обращения к внешнему API курсов валюты https://api.currencyapi.com
     /// </summary>
-    public class CurrencyHttpClient : ICurrencyAPI
+    public class CurrencyHttpClient : ICurrencyApi
     {
         private readonly HttpClient _httpClient;
 
@@ -46,32 +46,6 @@ namespace InternalApi.Services
         }
 
         /// <summary>
-        /// Метод обращения к текущему курсу валюты
-        /// </summary>
-        /// <param name="currencyCode">Код валюты</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
-        public async Task<Currency> GetLatestAsync(string? currencyCode, CancellationToken cancellationToken)
-        {
-            await CheckRequestLimit(cancellationToken);
-
-            currencyCode = currencyCode is null ? _settings.DefaultCurrency : currencyCode.ToUpper();
-
-            string url = $"latest?currencies={currencyCode.ToUpper()}" +
-                $"&base_currency={_settings.BaseCurrency}&apikey={_settings.ApiKey}";
-
-            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
-
-            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
-
-            return new Currency()
-            {
-                Code = currencyCode,
-                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount)
-            };
-        }
-
-        /// <summary>
         /// Метод обращения ко всем текущим курсам валют
         /// </summary>
         /// <param name="baseCurrency">Базовая валюта, к которой считаются курсы</param>
@@ -88,34 +62,6 @@ namespace InternalApi.Services
             var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
             return response.Data.Values.ToArray();
-        }
-
-        /// <summary>
-        /// Метод обращения к курсу валюты на дату
-        /// </summary>
-        /// <param name="currencyCode">Код валюты</param>
-        /// <param name="date">Дата</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
-        public async Task<CurrencyOnDate> GetHistoricalAsync(string currencyCode, DateTime date, CancellationToken cancellationToken)
-        {
-            await CheckRequestLimit(cancellationToken);
-
-            currencyCode = currencyCode.ToUpper();
-
-            string url = $"historical?currencies={currencyCode.ToUpper()}&date={date}" +
-                $"&base_currency={_settings.BaseCurrency}&apikey={_settings.ApiKey}";
-
-            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
-
-            var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
-
-            return new CurrencyOnDate()
-            {
-                Code = currencyCode,
-                Value = (float)Math.Round(response.Data[currencyCode].Value, _settings.CurrencyRoundCount),
-                Date = DateTime.Parse(response.Meta["last_updated_at"]).Date.ToString("yyyy-mm-dd")
-            };
         }
 
         /// <summary>

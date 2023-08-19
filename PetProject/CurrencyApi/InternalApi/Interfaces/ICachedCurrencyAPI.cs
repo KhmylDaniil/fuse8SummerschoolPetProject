@@ -4,12 +4,15 @@ using InternalApi.Models;
 
 namespace InternalApi.Interfaces
 {
-    public interface ICachedCurrencyAPI
+    /// <summary>
+    /// Интерфейс получения курса валюты из кеша, базы данных или внешнего апи
+    /// </summary>
+    public interface ICachedCurrencyApi
     {
         /// <summary>
         /// Получает текущий курс
         /// </summary>
-        /// <param name="currencyType">Валюта, для которой необходимо получить курс</param>
+        /// <param name="currencyCode">Валюта, для которой необходимо получить курс</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Текущий курс</returns>
         Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken);
@@ -17,7 +20,7 @@ namespace InternalApi.Interfaces
         /// <summary>
         /// Получает курс валюты, актуальный на <paramref name="date"/>
         /// </summary>
-        /// <param name="currencyType">Валюта, для которой необходимо получить курс</param>
+        /// <param name="currencyCode">Валюта, для которой необходимо получить курс</param>
         /// <param name="date">Дата, на которую нужно получить курс валют</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Курс на дату</returns>

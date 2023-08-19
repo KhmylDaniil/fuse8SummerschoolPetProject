@@ -49,8 +49,17 @@ public class Startup
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);
         });
 
-        services.AddTransient<ICurrencyAPI, CurrencyHttpClient>();
-        services.AddTransient<ICachedCurrencyAPI, CashedCurrencyService>();
+        services.AddHttpClient<CurrencyHttpClient>(x =>
+            x.BaseAddress = new Uri(_configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>().BaseAddress))
+            .AddAuditHandler(audit => audit
+            .IncludeRequestHeaders()
+            .IncludeRequestBody()
+            .IncludeResponseHeaders()
+            .IncludeResponseBody()
+            .IncludeContentHeaders());
+
+        services.AddTransient<ICurrencyApi, CurrencyHttpClient>();
+        services.AddTransient<ICachedCurrencyApi, CachedCurrencyService>();
 
         services.AddDbContext<AppDbContext>(o =>
         {
@@ -63,14 +72,7 @@ public class Startup
             .UseSnakeCaseNamingConvention();
         });
 
-        services.AddHttpClient<CurrencyHttpClient>(x =>
-            x.BaseAddress = new Uri(_configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>().BaseAddress))
-            .AddAuditHandler(audit => audit
-            .IncludeRequestHeaders()
-            .IncludeRequestBody()
-            .IncludeResponseHeaders()
-            .IncludeResponseBody()
-            .IncludeContentHeaders());
+        services.AddScoped<IAppDbContext, AppDbContext>();
 
         Configuration.Setup().UseSerilog(config => config.Message(
             auditEvent =>
@@ -87,6 +89,8 @@ public class Startup
             }));
 
         services.AddGrpc();
+
+        services.AddMemoryCache(options => options.ExpirationScanFrequency = TimeSpan.FromHours(2));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

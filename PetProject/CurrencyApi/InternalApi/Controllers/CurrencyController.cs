@@ -14,9 +14,9 @@ namespace InternalApi.Controllers
     [ApiController]
     public class CurrencyController : ControllerBase
     {
-        private readonly ICachedCurrencyAPI _cachedCurrencyAPI;
+        private readonly ICachedCurrencyApi _cachedCurrencyAPI;
 
-        public CurrencyController(ICachedCurrencyAPI cachedCurrencyAPI) => _cachedCurrencyAPI = cachedCurrencyAPI;
+        public CurrencyController(ICachedCurrencyApi cachedCurrencyAPI) => _cachedCurrencyAPI = cachedCurrencyAPI;
 
         /// <summary>
         /// Получить курс валюты по коду

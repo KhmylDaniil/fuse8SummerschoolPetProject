@@ -1,14 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InternalApi.Interfaces;
+using InternalApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternalApi
 {
-    public class AppDbContext : DbContext
+    /// <summary>
+    /// Контекст базы данных
+    /// </summary>
+    public class AppDbContext : DbContext, IAppDbContext
     {
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="options">Опции</param>
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        /// <summary>
+        /// Данные о курсах валюты на дату
+        /// </summary>
+        public DbSet<CurrenciesOnDate> CurrenciesOnDates { get; set; }
+        
+        /// <summary>
+        /// Метод для подтягивания конфигураций
+        /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             modelBuilder.HasDefaultSchema("cur");
         }
     }

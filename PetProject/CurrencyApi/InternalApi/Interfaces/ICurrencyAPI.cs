@@ -1,4 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
+using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using InternalApi.Models;
 
 namespace InternalApi.Interfaces
@@ -6,7 +7,7 @@ namespace InternalApi.Interfaces
     /// <summary>
     /// Сервис получения курсов валют из внешнего апи
     /// </summary>
-    public interface ICurrencyAPI
+    public interface ICurrencyApi
     {
         /// <summary>
         /// Получает текущий курс для всех валют
