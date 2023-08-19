@@ -2,6 +2,8 @@
 using Audit.Http;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -66,6 +68,19 @@ public class Startup
 			.AddAuditHandler(a => a.IncludeRequestBody());
 
 		services.AddTransient<IGrpcClient, GrpcClient>();
+
+        services.AddDbContext<AppDbContext>(o =>
+        {
+            o.UseNpgsql(
+                connectionString: _configuration.GetConnectionString("Default"),
+                npgsqlOptionsAction: sqlOptionsBuilder =>
+                {
+                    sqlOptionsBuilder.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "user");
+                })
+            .UseSnakeCaseNamingConvention();
+        });
+
+        services.AddScoped<IAppDbContext, AppDbContext>();
     }
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
