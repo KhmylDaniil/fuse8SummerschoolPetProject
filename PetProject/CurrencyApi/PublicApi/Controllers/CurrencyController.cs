@@ -1,5 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers

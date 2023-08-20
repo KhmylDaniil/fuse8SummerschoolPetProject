@@ -1,4 +1,4 @@
-﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
+﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities
 {
     /// <summary>
     /// Настройки приложения в базе данных
@@ -9,7 +9,7 @@
         /// Айди (отдельный ключ требуется для заполнения таблицы данными через конфигурацию)
         /// </summary>
         public int Id { get; set; }
-        
+
         /// <summary>
         /// Код валюты по умолчанию
         /// </summary>

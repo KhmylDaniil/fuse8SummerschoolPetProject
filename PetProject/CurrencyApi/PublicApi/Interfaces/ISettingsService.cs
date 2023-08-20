@@ -1,4 +1,4 @@
-﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
 {

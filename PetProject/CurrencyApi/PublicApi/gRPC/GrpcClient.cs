@@ -1,6 +1,6 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Exceptions;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Options;
 
@@ -12,15 +12,12 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
     public class GrpcClient : IGrpcClient
     {
         private readonly GrpcDocument.GrpcDocumentClient _grpcClient;
-        private readonly CurrencySettings _settings;
         private readonly ISettingsService _settingsService;
 
         public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient,
-            IOptionsSnapshot<CurrencySettings> settings,
             ISettingsService settingsService)
         {
             _grpcClient = grpcClient;
-            _settings = settings.Value;
             _settingsService = settingsService;
         }
 

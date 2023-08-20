@@ -1,5 +1,4 @@
-﻿
-namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
+﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses
 {
     /// <summary>
     /// Ответ на запрос текущих настроек приложения

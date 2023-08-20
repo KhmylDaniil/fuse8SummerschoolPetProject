@@ -1,5 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi
@@ -18,6 +18,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
         public DbSet<Settings> Settings { get; set; }
 
         /// <summary>
+        /// Избранные валюты
+        /// </summary>
+        public DbSet<FavoriteCurrency> FavoriteCurrencies { get; set; }
+
+        /// <summary>
         /// Метод для подтягивания конфигураций
         /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +30,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             modelBuilder.HasDefaultSchema("user");
+
+            modelBuilder.HasCollation("ignore_case_collation", locale: "en-u-ks-primary", provider: "icu", deterministic: false);
         }
     }
 }

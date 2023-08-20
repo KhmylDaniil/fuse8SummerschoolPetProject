@@ -1,11 +1,11 @@
-﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Configurations
 {
     /// <summary>
-    /// Конфигурация настроек приложения
+    /// Конфигурация для <see cref="Settings"/>
     /// </summary>
     public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
     {

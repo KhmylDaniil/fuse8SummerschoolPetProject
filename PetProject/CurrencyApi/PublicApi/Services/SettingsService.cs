@@ -1,5 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services

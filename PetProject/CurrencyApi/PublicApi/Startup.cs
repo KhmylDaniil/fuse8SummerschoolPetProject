@@ -83,9 +83,11 @@ public class Startup
 
         services.AddScoped<IAppDbContext, AppDbContext>();
 		services.AddTransient<ISettingsService, SettingsService>();
+        services.AddTransient<IFavoriteCurrenciesService, FavoriteCurrenciesService>();
+
     }
 
-	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 	{
 		if (env.IsDevelopment())
 		{

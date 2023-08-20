@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.ExternalApiResponseModels
 {

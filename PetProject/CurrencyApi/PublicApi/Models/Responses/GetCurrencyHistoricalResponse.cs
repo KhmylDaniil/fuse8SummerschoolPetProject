@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
+namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses
 {
     /// <summary>
     /// Ответ на запрос курса валюты с указанием даты актуальности курса
