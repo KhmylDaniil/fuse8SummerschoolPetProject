@@ -58,7 +58,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
-        public async Task<GetCurrencyResponse> GetLatestAsync(string currencyCode, CancellationToken cancellationToken)
+        public async Task<GetCurrencyResponse> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
             => await _gprcClient.GetCurrencyResponseAsync(currencyCode, cancellationToken);
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
-        public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(string currencyCode, DateOnly date, CancellationToken cancellationToken)
+        public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
             => await _gprcClient.GetHistoricalAsync(currencyCode, date, cancellationToken);
 
         /// <summary>

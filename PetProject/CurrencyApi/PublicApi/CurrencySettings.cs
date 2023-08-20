@@ -6,19 +6,9 @@
     public class CurrencySettings
     {
         /// <summary>
-        /// Валюта по умолчанию
-        /// </summary>
-        public string? DefaultCurrency { get; init; }
-
-        /// <summary>
         /// Базовая валюта, относительно которой считается курс
         /// </summary>
         public string? BaseCurrency { get; init; }
-
-        /// <summary>
-        /// Количество знаков после запятой, до которого следует округлять значение курса валют
-        /// </summary>
-        public int CurrencyRoundCount { get; init; }
 
         /// <summary>
         /// Апи ключ

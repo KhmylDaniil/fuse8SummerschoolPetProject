@@ -2,6 +2,7 @@
 using Audit.Http;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
+using Fuse8_ByteMinds.SummerSchool.PublicApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Serilog;
@@ -81,6 +82,7 @@ public class Startup
         });
 
         services.AddScoped<IAppDbContext, AppDbContext>();
+		services.AddTransient<ISettingsService, SettingsService>();
     }
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

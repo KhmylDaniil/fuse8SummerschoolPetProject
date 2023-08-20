@@ -10,7 +10,6 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
         /// <summary>
         /// Дата актуальности курса в формате yyyy-mm-dd
         /// </summary>
-        [JsonPropertyName("date")]
         public string Date { get; init; }
     }
 }

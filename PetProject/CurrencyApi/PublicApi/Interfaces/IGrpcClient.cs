@@ -10,10 +10,10 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// <summary>
         /// Метод получения последнего курса валюты
         /// </summary>
-        /// <param name="currencyCode">код валюты или дефолтный из конфигурации</param>
+        /// <param name="currencyCode">код валюты или дефолтный из настроек</param>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Ответ на запрос курса валюты</returns>
-        public Task<GetCurrencyResponse> GetCurrencyResponseAsync(string? currencyCode, CancellationToken cancellationToken);
+        public Task<GetCurrencyResponse> GetCurrencyResponseAsync(CurrencyCode? currencyCode, CancellationToken cancellationToken);
 
         /// <summary>
         /// Метод получения курса валюты на дату
@@ -22,7 +22,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// <param name="date">Дата актуальности курса</param>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Ответ на запрос курса валюты с датой актуальности</returns>
-        public Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(string currencyCode, DateOnly date, CancellationToken cancellationToken);
+        public Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken);
 
         /// <summary>
         /// Запрос настроек приложения

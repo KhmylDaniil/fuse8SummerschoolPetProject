@@ -9,7 +9,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models
         /// <summary>
         /// Текущий курс валют по умолчанию из конфигурации
         /// </summary>
-        public string? DefaultCurrency { get; init; }
+        public CurrencyCode DefaultCurrency { get; init; }
 
         /// <summary>
         /// Базовая валюта, относительно которой считается курс
