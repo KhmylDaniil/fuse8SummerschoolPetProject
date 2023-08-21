@@ -31,7 +31,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             modelBuilder.HasDefaultSchema("user");
 
-            modelBuilder.HasCollation("ignore_case_collation", locale: "en-u-ks-primary", provider: "icu", deterministic: false);
+            modelBuilder.HasPostgresExtension("citext");
         }
     }
 }

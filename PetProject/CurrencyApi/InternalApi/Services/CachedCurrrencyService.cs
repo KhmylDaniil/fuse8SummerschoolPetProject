@@ -43,8 +43,9 @@ namespace InternalApi.Services
         /// <param name="currencyCode">Код валюты</param>
         /// <param name="date">Дата актуальности курса</param>
         /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Модель курса валюты</returns>
-        public async Task<CurrencyDTO> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
+        public async Task<CurrencyDTO> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken, bool dontRound = default)
         {
             CurrenciesOnDate? data = null;
 
@@ -68,7 +69,7 @@ namespace InternalApi.Services
 
             }
 
-            return FindCurrencyByCode(currencyCode, data);
+            return FindCurrencyByCode(currencyCode, data, dontRound);
         }
 
         /// <summary>
@@ -76,8 +77,9 @@ namespace InternalApi.Services
         /// </summary>
         /// <param name="currencyCode">Код валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Модель курса валюты</returns>
-        public async Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken, bool dontRound = default)
         {
             CurrenciesOnDate? currenciesOnDate = null;
 
@@ -98,7 +100,52 @@ namespace InternalApi.Services
 
             _memoryCache.Set("cur", currenciesOnDate);
 
-            return FindCurrencyByCode(currencyCode, currenciesOnDate);
+            return FindCurrencyByCode(currencyCode, currenciesOnDate, dontRound);
+        }
+
+        /// <summary>
+        /// Метод получения избранного курса валюты
+        /// </summary>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        public async Task<float> GetFavoredCurrencyAsync(CurrencyCode currency, CurrencyCode baseCurrency, CancellationToken cancellationToken)
+        {
+            var currencyToCacheBaseCurrencyDTO = await GetCurrentCurrencyAsync(currency, cancellationToken, dontRound: true);
+
+            if (!Enum.TryParse(_settings.BaseCurrency, true, out CurrencyCode output))
+                throw new ArgumentException("Базовая валюта кэша неверна.");
+
+            if (baseCurrency == output)
+                return currencyToCacheBaseCurrencyDTO.Value;
+
+            var baseCurrencyToCacheBaseCurrencyDTO = await GetCurrentCurrencyAsync(baseCurrency, cancellationToken, dontRound: true);
+
+            return currencyToCacheBaseCurrencyDTO.Value / baseCurrencyToCacheBaseCurrencyDTO.Value;
+        }
+
+        /// <summary>
+        /// Метод получения избранного курса валюты на дату актуальности
+        /// </summary>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
+        /// <param name="date">Дата актуальности курса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        public async Task<float> GetFavoredCurrencyHistoricalAsync(CurrencyCode currency, CurrencyCode baseCurrency, DateOnly date, CancellationToken cancellationToken)
+        {
+            var currencyToCacheBaseCurrencyDTO = await GetCurrencyOnDateAsync(currency, date, cancellationToken, dontRound: true);
+
+            if (!Enum.TryParse(_settings.BaseCurrency, true, out CurrencyCode output))
+                throw new ArgumentException("Базовая валюта кэша неверна.");
+
+            if (baseCurrency == output)
+                return currencyToCacheBaseCurrencyDTO.Value;
+
+            var baseCurrencyToCacheBaseCurrencyDTO = await GetCurrencyOnDateAsync(baseCurrency, date, cancellationToken, dontRound: true);
+
+            return currencyToCacheBaseCurrencyDTO.Value / baseCurrencyToCacheBaseCurrencyDTO.Value;
         }
 
         /// <summary>
@@ -122,14 +169,17 @@ namespace InternalApi.Services
         /// </summary>
         /// <param name="currencyCode">Код валюты</param>
         /// <param name="data">Данные о курсе валюты</param>
+        /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Курс валюты</returns>
         /// <exception cref="CurrencyNotFoundException"></exception>
-        private CurrencyDTO FindCurrencyByCode(CurrencyCode currencyCode, CurrenciesOnDate data)
+        private CurrencyDTO FindCurrencyByCode(CurrencyCode currencyCode, CurrenciesOnDate data, bool dontRound)
         {
             var currency = data.Currencies.FirstOrDefault(c => c.Code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase))
                 ?? throw new CurrencyNotFoundException();
 
-            return new CurrencyDTO(currencyCode, (float)Math.Round(currency.Value, _settings.CurrencyRoundCount));
+            return dontRound
+                ? new CurrencyDTO(currencyCode, currency.Value)
+                : new CurrencyDTO(currencyCode, (float)Math.Round(currency.Value, _settings.CurrencyRoundCount));
         }
     }
 }

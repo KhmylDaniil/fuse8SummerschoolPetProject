@@ -9,9 +9,37 @@ service GrpcDocument {
   // Получить курс валюты по коду
   rpc GetLatestAsync (CurrencyRequest) returns (CurrencyResponse);
 
+  // Получить курс валюты на дату актуальности
   rpc GetHistoricalAsync (CurrencyRequestWithDate) returns (CurrencyResponse);
 
+  // Получить настройки приложения
   rpc GetSettingsAsync (SettingsRequest) returns (SettingsResponse);
+
+  // Получить курс избранной валюты
+  rpc GetLatestFavoriteCurrencyAsync (FavoriteCurrencyRequest) returns (FavoriteCurrencyResponse);
+
+  // Получить курс избранной валюты на дату актуальности
+  rpc GetHistoricalFavoriteCurrencyAsync (HistoricalFavoriteCurrencyRequest) returns (FavoriteCurrencyResponse);
+}
+
+// Запрос избранного кода валюты
+message FavoriteCurrencyRequest {
+    CurrencyCode currency = 1; //код валюты
+    CurrencyCode baseCurrency = 2; //код базовой валюты
+}
+
+// Запрос избранного кода валюты на дату актуальности
+message HistoricalFavoriteCurrencyRequest {
+    CurrencyCode currency = 1; //код валюты
+    CurrencyCode baseCurrency = 2; //код базовой валюты
+    google.protobuf.Timestamp date = 3; //дата актуальности избранного курса валюты
+}
+
+//Ответ на запрос избранного кода валюты
+message FavoriteCurrencyResponse {
+    CurrencyCode currency = 1; //код валюты
+    CurrencyCode baseCurrency = 2; //код базовой валюты
+    float value = 3; //курс валюты
 }
 
 // Код валюты.

@@ -13,7 +13,15 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// <param name="currencyCode">код валюты или дефолтный из настроек</param>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Ответ на запрос курса валюты</returns>
-        public Task<GetCurrencyResponse> GetCurrencyResponseAsync(CurrencyCode? currencyCode, CancellationToken cancellationToken);
+        Task<GetCurrencyResponse> GetCurrencyResponseAsync(CurrencyCode? currencyCode, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Метод получения избранного курса валюты
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение последнего избранного курса валюты</returns>
+        Task<GetFavoredCurrencyValueResponse> GetFavoredCurrencyAsync(string name, CancellationToken cancellationToken);
 
         /// <summary>
         /// Метод получения курса валюты на дату
@@ -22,13 +30,22 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// <param name="date">Дата актуальности курса</param>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Ответ на запрос курса валюты с датой актуальности</returns>
-        public Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken);
+        Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Метод получения избранного курса валюты на дату актуальности
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="date">Дата актуальности курса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение последнего избранного курса валюты</returns>
+        Task<GetFavoredCurrencyValueResponse> GetFavoredCurrencyHistoricalAsync(string name, DateOnly date, CancellationToken cancellationToken);
 
         /// <summary>
         /// Запрос настроек приложения
         /// </summary>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Ответ на запрос настроек приложения</returns>
-        public Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken);
+        Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken);
     }
 }

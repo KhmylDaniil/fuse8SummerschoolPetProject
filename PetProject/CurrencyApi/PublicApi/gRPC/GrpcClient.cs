@@ -1,8 +1,6 @@
-﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Exceptions;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces;
 using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
 using Google.Protobuf.WellKnownTypes;
-using Microsoft.Extensions.Options;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
 {
@@ -13,12 +11,15 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
     {
         private readonly GrpcDocument.GrpcDocumentClient _grpcClient;
         private readonly ISettingsService _settingsService;
+        private readonly IFavoriteCurrenciesService _favoriteCurrenciesService;
 
         public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient,
+            IFavoriteCurrenciesService favoriteCurrenciesService,
             ISettingsService settingsService)
         {
             _grpcClient = grpcClient;
             _settingsService = settingsService;
+            _favoriteCurrenciesService = favoriteCurrenciesService;
         }
 
         /// <summary>
@@ -29,16 +30,66 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         /// <returns>Ответ на запрос курса валюты</returns>
         public async Task<GetCurrencyResponse> GetCurrencyResponseAsync(CurrencyCode? currencyCode, CancellationToken cancellationToken)
         {
-            if (currencyCode == null)
-            {
-                var settings = await _settingsService.GetSettingsAsync(cancellationToken);
-                currencyCode = settings.DefaultCurrency;
-            }
+            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+
+            currencyCode ??= settings.DefaultCurrency;
 
             var currencyRequest = new CurrencyRequest { CurrencyCode = currencyCode.Value };
             var response = await _grpcClient.GetLatestAsyncAsync(currencyRequest, cancellationToken: cancellationToken);
 
-            return new GetCurrencyResponse { Code = response.CurrencyCode, Value = response.Value};
+            return new GetCurrencyResponse { Code = response.CurrencyCode, Value = (float)Math.Round(response.Value, settings.CurrencyRoundCount) };
+        }
+
+        /// <summary>
+        /// Метод получения избранного курса валюты
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение последнего избранного курса валюты</returns>
+        public async Task<GetFavoredCurrencyValueResponse> GetFavoredCurrencyAsync(string name, CancellationToken cancellationToken)
+        {
+            var favCurrency = await _favoriteCurrenciesService.GetFavoriteCurrencyAsync(name, cancellationToken);
+
+            var favCurrencyRequest = new FavoriteCurrencyRequest { Currency = favCurrency.Currency, BaseCurrency = favCurrency.BaseCurrency };
+
+            var response = await _grpcClient.GetLatestFavoriteCurrencyAsyncAsync(favCurrencyRequest, cancellationToken: cancellationToken);
+
+            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+
+            return new GetFavoredCurrencyValueResponse(
+                name: name,
+                currency: response.Currency,
+                baseCurrency: response.BaseCurrency,
+                value: (float)Math.Round(response.Value, settings.CurrencyRoundCount));
+        }
+
+        /// <summary>
+        /// Метод получения избранного курса валюты на дату актуальности
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="date">Дата актуальности курса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение последнего избранного курса валюты</returns>
+        public async Task<GetFavoredCurrencyValueResponse> GetFavoredCurrencyHistoricalAsync(string name, DateOnly date, CancellationToken cancellationToken)
+        {
+            var favCurrency = await _favoriteCurrenciesService.GetFavoriteCurrencyAsync(name, cancellationToken);
+
+            var favCurrencyRequest = new HistoricalFavoriteCurrencyRequest
+            {
+                Currency = favCurrency.Currency,
+                BaseCurrency = favCurrency.BaseCurrency,
+                Date = Timestamp.FromDateTime(date.ToDateTime(new TimeOnly(00, 00, 00), DateTimeKind.Utc))
+            };
+
+            var response = await _grpcClient.GetHistoricalFavoriteCurrencyAsyncAsync(favCurrencyRequest, cancellationToken: cancellationToken);
+
+            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+
+            return new GetFavoredCurrencyValueResponse(
+                name: favCurrency.Name,
+                currency: response.Currency,
+                baseCurrency: response.BaseCurrency,
+                value: (float)Math.Round(response.Value, settings.CurrencyRoundCount));
         }
 
         /// <summary>
@@ -57,10 +108,12 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
             };
             var response = await _grpcClient.GetHistoricalAsyncAsync(currencyRequest, cancellationToken: cancellationToken);
 
+            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+
             return new GetCurrencyHistoricalResponse
             {
                 Code = response.CurrencyCode,
-                Value = response.Value,
+                Value = (float)Math.Round(response.Value, settings.CurrencyRoundCount),
                 Date = date.ToString("yyyy-MM-dd")
             };
         }

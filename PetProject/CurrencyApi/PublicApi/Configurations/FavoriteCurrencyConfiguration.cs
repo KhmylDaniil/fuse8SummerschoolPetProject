@@ -13,7 +13,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasIndex(x => x.Name).IsUnique().UseCollation("ignore_case_collation");
+            builder.Property(x => x.Name).HasColumnType("citext");
+            builder.HasIndex(x => x.Name).IsUnique();
 
             builder.Property(x => x.Currency).IsRequired();
             builder.Property(x => x.BaseCurrency).IsRequired();

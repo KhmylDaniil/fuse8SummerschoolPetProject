@@ -14,8 +14,9 @@ namespace InternalApi.Interfaces
         /// </summary>
         /// <param name="currencyCode">Валюта, для которой необходимо получить курс</param>
         /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Текущий курс</returns>
-        Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken);
+        Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken, bool dontRound = default);
 
         /// <summary>
         /// Получает курс валюты, актуальный на <paramref name="date"/>
@@ -23,8 +24,28 @@ namespace InternalApi.Interfaces
         /// <param name="currencyCode">Валюта, для которой необходимо получить курс</param>
         /// <param name="date">Дата, на которую нужно получить курс валют</param>
         /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Курс на дату</returns>
-        Task<CurrencyDTO> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken);
+        Task<CurrencyDTO> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken, bool dontRound = default);
+
+        /// <summary>
+        /// Метод получения избранного курса валюты
+        /// </summary>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение курса валюты к базовой валюте</returns>
+        public Task<float> GetFavoredCurrencyAsync(CurrencyCode currency, CurrencyCode baseCurrency, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Метод получения избранного курса валюты на дату актуальности
+        /// </summary>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
+        /// <param name="date">Дата актуальности курса</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns>Значение курса валюты к базовой валюте на дату актуальности</returns>
+        Task<float> GetFavoredCurrencyHistoricalAsync(CurrencyCode currency, CurrencyCode baseCurrency, DateOnly date, CancellationToken cancellationToken);
 
         /// <summary>
         /// Показывает настройки приложения

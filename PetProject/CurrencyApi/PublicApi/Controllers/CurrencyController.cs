@@ -62,6 +62,45 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
             => await _gprcClient.GetCurrencyResponseAsync(currencyCode, cancellationToken);
 
         /// <summary>
+        /// Получить избранный курс валюты по названию
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="favCurName">Название</param>
+        /// <response code="200">
+        /// Возвращает если удалось получить избранный курс валюты
+        /// </response>
+        /// /// <response code="429">
+        /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
+        /// </response>
+        /// <returns>Значение избранного курса валюты на последнюю дату</returns>
+        [HttpGet("FavCur/{favCurName}")]
+        public async Task<GetFavoredCurrencyValueResponse> GetLatestFavoriteCurrencyAsync(string favCurName, CancellationToken cancellationToken)
+            => await _gprcClient.GetFavoredCurrencyAsync(favCurName, cancellationToken);
+
+        /// <summary>
+        /// Получить избранный курс валюты по названию на дату актуальности
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <param name="favCurName">Название</param>
+        /// <param name="date">Дата актуальности курса</param>
+        /// <response code="200">
+        /// Возвращает если удалось получить избранный курс валюты
+        /// </response>
+        /// /// <response code="429">
+        /// Возвращает если удалось не удалось получить доступ к API из-за исчерпания лимита
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при иной ошибке
+        /// </response>
+        /// <returns>Значение избранного курса валюты на последнюю дату</returns>
+        [HttpGet("FavCur/{favCurName}/{date}")]
+        public async Task<GetFavoredCurrencyValueResponse> GetHistoricalFavoriteCurrencyAsync(string favCurName, DateOnly date, CancellationToken cancellationToken)
+            => await _gprcClient.GetFavoredCurrencyHistoricalAsync(favCurName, date, cancellationToken);
+
+        /// <summary>
         /// Получить курс валюты по коду с указанием даты актуальности
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
