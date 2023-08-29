@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  internalapi:
+    image: ${DOCKER_REGISTRY-}internalapi
+    container_name: internal_api
+    ports:
+        - "9980:80"
+        - "5700:5700"
+    environment:
+        - ASPNETCORE_URLS=http://+:80;http://+:5700
+        - GrpcPort=5700
+    build:
+      context: .
+      dockerfile: InternalApi/Dockerfile
+
+  publicapi:
+    image: ${DOCKER_REGISTRY-}publicapi
+    container_name: public_api
+    ports:
+        - "9981:80"
+    environment:
+        - ASPNETCORE_URLS=http://+:80
+        - GrpcServiceAddress=http://internal_api:5700
+    build:
+      context: .
+      dockerfile: PublicApi/Dockerfile
+

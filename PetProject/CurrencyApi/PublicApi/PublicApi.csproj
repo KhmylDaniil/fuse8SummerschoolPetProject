@@ -7,6 +7,8 @@
         <RootNamespace>Fuse8_ByteMinds.SummerSchool.PublicApi</RootNamespace>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <UserSecretsId>91c26696-45fb-43d5-9cbb-d6203d140b70</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
     </PropertyGroup>
 
 	<ItemGroup>
@@ -32,6 +34,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
