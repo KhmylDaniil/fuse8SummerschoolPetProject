@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 
 services:
   internalapi:
@@ -8,8 +8,10 @@ services:
         - "9980:80"
         - "5700:5700"
     environment:
+        - ASPNETCORE_ENVIRONMENT=Development
         - ASPNETCORE_URLS=http://+:80;http://+:5700
         - GrpcPort=5700
+        - ConnectionStrings__Default=Host=postgres;Port=5432;Database=summerSchool;Username=postgres;Password=dummyPassword
     build:
       context: .
       dockerfile: InternalApi/Dockerfile
@@ -20,9 +22,25 @@ services:
     ports:
         - "9981:80"
     environment:
+        - ASPNETCORE_ENVIRONMENT=Development
         - ASPNETCORE_URLS=http://+:80
         - GrpcServiceAddress=http://internal_api:5700
+        - ConnectionStrings__Default=Host=postgres;Port=5432;Database=summerSchool;Username=postgres;Password=dummyPassword
     build:
       context: .
       dockerfile: PublicApi/Dockerfile
+  
+  postgres:
+    image: postgres:15.3
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+        DATABASE_HOST: 127.0.0.1
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: dummyPassword
+        POSTGRES_DB: summerSchool
+    ports:
+        - "5432:5432"
+    volumes:
+        - /DockerData/postgres/data:/var/lib/postgresql/data
 
