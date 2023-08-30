@@ -42,7 +42,7 @@ public class Startup
             {
                 Title = "Api",
                 Version = "v1",
-                Description = "TestDescription"
+                Description = "PublicApi"
             });
 
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml"), true);

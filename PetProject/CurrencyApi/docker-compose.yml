@@ -3,44 +3,44 @@ version: '3.9'
 services:
   internalapi:
     image: ${DOCKER_REGISTRY-}internalapi
-    container_name: internal_api
+    container_name: ${INTERNAL_API_CONTAINER_NAME}
+
     ports:
-        - "9980:80"
-        - "5700:5700"
+        - "9980:${INTERNAL_API_CONTAINER_PORT}"
+        - "5700:${INTERNAL_API_CONTAINER_GRPC_PORT}"
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - ASPNETCORE_URLS=http://+:80;http://+:5700
-        - GrpcPort=5700
-        - ConnectionStrings__Default=Host=postgres;Port=5432;Database=summerSchool;Username=postgres;Password=dummyPassword
+        - ASPNETCORE_URLS=http://+:${INTERNAL_API_CONTAINER_PORT};http://+:${INTERNAL_API_CONTAINER_GRPC_PORT}
+        - GrpcPort=${INTERNAL_API_CONTAINER_GRPC_PORT}
+        - ApiPort=${INTERNAL_API_CONTAINER_PORT}
+        - ConnectionStrings__Default=Host=${DATABASE_NAME};Port=${DATABASE_PORT};Database=${DATABASE_DB_NAME};Username=${DATABASE_USER};Password=${DATABASE_PASSWORD}
     build:
       context: .
       dockerfile: InternalApi/Dockerfile
 
   publicapi:
     image: ${DOCKER_REGISTRY-}publicapi
-    container_name: public_api
+    container_name: ${PUBLIC_API_CONTAINER_NAME}
     ports:
-        - "9981:80"
+        - "9981:${PUBLIC_API_CONTAINER_PORT}"
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - ASPNETCORE_URLS=http://+:80
-        - GrpcServiceAddress=http://internal_api:5700
-        - ConnectionStrings__Default=Host=postgres;Port=5432;Database=summerSchool;Username=postgres;Password=dummyPassword
+        - ASPNETCORE_URLS=http://+:${PUBLIC_API_CONTAINER_PORT}
+        - GrpcServiceAddress=http://internal_api:${INTERNAL_API_CONTAINER_GRPC_PORT}
+        - ConnectionStrings__Default=Host=${DATABASE_NAME};Port=${DATABASE_PORT};Database=${DATABASE_DB_NAME};Username=${DATABASE_USER};Password=${DATABASE_PASSWORD}
     build:
       context: .
       dockerfile: PublicApi/Dockerfile
   
   postgres:
     image: postgres:15.3
-    container_name: postgres
+    container_name: ${DATABASE_CONTAINER_NAME}
     restart: unless-stopped
     environment:
         DATABASE_HOST: 127.0.0.1
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: dummyPassword
-        POSTGRES_DB: summerSchool
+        POSTGRES_USER: ${DATABASE_USER}
+        POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+        POSTGRES_DB: ${DATABASE_CONTAINER_DB_NAME}
     ports:
-        - "5432:5432"
+        - "5432:${DATABASE_PORT}"
     volumes:
-        - /DockerData/postgres/data:/var/lib/postgresql/data
+        - ${HOST_DATABASE_DATA}:${CONTAINER_DATABASE_DATA}
 
