@@ -1,6 +1,8 @@
-﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
+﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
+using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using InternalApi.Models;
+using InternalApi.Models.Entities;
 
 namespace InternalApi.Interfaces
 {
@@ -12,19 +14,17 @@ namespace InternalApi.Interfaces
         /// <summary>
         /// Получает текущий курс для всех валют
         /// </summary>
-        /// <param name="baseCurrency">Базовая валюта, относительно которой необходимо получить курс</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Список курсов валют</returns>
-        public Task<Currency[]> GetAllCurrentCurrenciesAsync(string baseCurrency, CancellationToken cancellationToken);
+        public Task<Currency[]> GetAllCurrentCurrenciesAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Получает курс для всех валют, актуальный на <paramref name="date"/>
         /// </summary>
-        /// <param name="baseCurrency">Базовая валюта, относительно которой необходимо получить курс</param>
         /// <param name="date">Дата, на которую нужно получить курс валют</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Список курсов валют на дату</returns>
-        public Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(string baseCurrency, DateOnly date, CancellationToken cancellationToken);
+        public Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(DateOnly date, CancellationToken cancellationToken);
 
         /// <summary>
         /// Показывает настройки приложения

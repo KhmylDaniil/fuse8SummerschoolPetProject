@@ -1,5 +1,5 @@
 ﻿using InternalApi.Interfaces;
-using InternalApi.Models;
+using InternalApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternalApi
@@ -19,7 +19,17 @@ namespace InternalApi
         /// Данные о курсах валюты на дату
         /// </summary>
         public DbSet<CurrenciesOnDate> CurrenciesOnDates { get; set; }
-        
+
+        /// <summary>
+        /// Задачи изменения базовой валюты кэша
+        /// </summary>
+        public DbSet<ChangeCacheTask> ChangeCacheTasks { get; set; }
+
+        /// <summary>
+        /// Настройки приложения в базе данных
+        /// </summary>
+        public DbSet<Settings> Settings { get; set; }
+
         /// <summary>
         /// Метод для подтягивания конфигураций
         /// </summary>

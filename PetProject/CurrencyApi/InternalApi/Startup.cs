@@ -58,8 +58,11 @@ public class Startup
             .IncludeResponseBody()
             .IncludeContentHeaders());
 
+        services.AddTransient<ISettingsService, SettingsService>();
         services.AddTransient<ICurrencyApi, CurrencyHttpClient>();
-        services.AddTransient<ICachedCurrencyApi, CachedCurrencyService>();
+        services.AddTransient<ICachedCurrencyService, CachedCurrencyService>();
+        services.AddTransient<IChangeCacheService, ChangeCacheService>();
+
 
         services.AddDbContext<AppDbContext>(o =>
         {

@@ -9,9 +9,9 @@ namespace InternalApi.gRPC
     /// </summary>
     public class GrpcService : GrpcDocument.GrpcDocumentBase
     {
-        private readonly ICachedCurrencyApi _cachedCurrencyAPI;
+        private readonly ICachedCurrencyService _cachedCurrencyAPI;
 
-        public GrpcService(ICachedCurrencyApi cachedCurrencyAPI)
+        public GrpcService(ICachedCurrencyService cachedCurrencyAPI)
         {
             _cachedCurrencyAPI = cachedCurrencyAPI;
         }

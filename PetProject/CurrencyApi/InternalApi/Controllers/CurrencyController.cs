@@ -2,7 +2,6 @@
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using InternalApi.Interfaces;
 using InternalApi.Models;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternalApi.Controllers
@@ -14,9 +13,14 @@ namespace InternalApi.Controllers
     [ApiController]
     public class CurrencyController : ControllerBase
     {
-        private readonly ICachedCurrencyApi _cachedCurrencyAPI;
+        private readonly ICachedCurrencyService _cachedCurrencyAPI;
+        private readonly IChangeCacheService _changeCacheService;
 
-        public CurrencyController(ICachedCurrencyApi cachedCurrencyAPI) => _cachedCurrencyAPI = cachedCurrencyAPI;
+        public CurrencyController(ICachedCurrencyService cachedCurrencyAPI, IChangeCacheService changeCacheService)
+        {
+            _cachedCurrencyAPI = cachedCurrencyAPI;
+            _changeCacheService = changeCacheService;
+        }
 
         /// <summary>
         /// Получить курс валюты по коду
@@ -62,6 +66,33 @@ namespace InternalApi.Controllers
         [HttpGet("{currencyCode}/{date}")]
         public async Task<CurrencyDTO> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
             => await _cachedCurrencyAPI.GetCurrencyOnDateAsync(currencyCode, date, cancellationToken);
+
+        /// <summary>
+        /// Создать задачу пересчета кеша
+        /// </summary>
+        /// <param name="currencyCode">Новый код базовой валюты</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <response code="202">
+        /// Возвращает при принятии задачи
+        /// </response>
+        /// <response code="500">
+        /// Возвращает при ошибке
+        /// </response>
+        /// <returns>Идентификатор задачи</returns>
+        [HttpPost("changeCache/{currencyCode}")]
+        public async Task<IActionResult> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        {
+            var id = await _changeCacheService.CreateChangeCacheTask(currencyCode, cancellationToken);
+
+            return Accepted(id);
+        }
+
+        [HttpPut("changeCache/{id}")]
+        public async Task ChangeCacheTask(Guid id, CancellationToken cancellationToken)
+        {
+            await _changeCacheService.ProcessChangeCacheTask(id, cancellationToken);
+        }
+
 
         /// <summary>
         /// Запрос текущих настроек приложения

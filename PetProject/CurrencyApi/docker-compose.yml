@@ -43,4 +43,3 @@ services:
         - "5432:${DATABASE_PORT}"
     volumes:
         - ${HOST_DATABASE_DATA}:${CONTAINER_DATABASE_DATA}
-

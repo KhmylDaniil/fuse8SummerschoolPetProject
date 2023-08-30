@@ -3,6 +3,7 @@ using System;
 using InternalApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternalApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230830102444_AddChangeCacheTask")]
+    partial class AddChangeCacheTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,32 +66,6 @@ namespace InternalApi.Migrations
                         .HasName("pk_currencies_on_dates");
 
                     b.ToTable("currencies_on_dates", "cur");
-                });
-
-            modelBuilder.Entity("InternalApi.Models.Entities.Settings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BaseCurrency")
-                        .HasColumnType("integer")
-                        .HasColumnName("base_currency");
-
-                    b.HasKey("Id")
-                        .HasName("pk_settings");
-
-                    b.ToTable("settings", "cur");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = -1,
-                            BaseCurrency = 0
-                        });
                 });
 #pragma warning restore 612, 618
         }

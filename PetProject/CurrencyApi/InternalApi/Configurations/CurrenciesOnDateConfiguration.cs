@@ -1,4 +1,4 @@
-﻿using InternalApi.Models;
+﻿using InternalApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

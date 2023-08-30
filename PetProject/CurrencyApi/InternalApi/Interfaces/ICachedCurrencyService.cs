@@ -7,7 +7,7 @@ namespace InternalApi.Interfaces
     /// <summary>
     /// Интерфейс получения курса валюты из кеша, базы данных или внешнего апи
     /// </summary>
-    public interface ICachedCurrencyApi
+    public interface ICachedCurrencyService
     {
         /// <summary>
         /// Получает текущий курс

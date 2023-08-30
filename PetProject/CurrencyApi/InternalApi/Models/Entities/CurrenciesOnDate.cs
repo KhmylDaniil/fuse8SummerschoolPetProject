@@ -1,8 +1,7 @@
-﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
-using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
+﻿using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using System.Text.Json;
 
-namespace InternalApi.Models
+namespace InternalApi.Models.Entities
 {
     /// <summary>
     /// Данные о курсах валют на определенную дату
@@ -10,13 +9,13 @@ namespace InternalApi.Models
     public class CurrenciesOnDate
     {
         private Currency[] _currencies;
-        
+
         public string CurrenciesAsJson { get; set; }
 
         /// <summary>
         /// Дата актуальности курсов валют
         /// </summary>
-        public DateTime Date { get; init; }
+        public DateTime Date { get; set; }
 
         /// <summary>
         /// Курсы валют

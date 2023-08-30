@@ -6,17 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Exceptions;
+using InternalApi.Models.Entities;
 
 namespace InternalApi.Services
 {
     /// <summary>
     /// Сервис для получения данных о курсе валюты с возможностью получения данных из кеша, базы данных и внешнего апи
     /// </summary>
-    public class CachedCurrencyService : ICachedCurrencyApi
+    public class CachedCurrencyService : ICachedCurrencyService
     {
         private readonly IAppDbContext _appDbContext;
         private readonly ICurrencyApi _currencyAPI;
         private readonly IMemoryCache _memoryCache;
+        private readonly ISettingsService _settingsService;
         private readonly CurrencySettings _settings;
 
         /// <summary>
@@ -29,12 +31,14 @@ namespace InternalApi.Services
         public CachedCurrencyService(IAppDbContext appDbContext,
             CurrencyHttpClient currencyAPI,
             IMemoryCache memoryCache,
+            ISettingsService settingsService,
             IOptionsSnapshot<CurrencySettings> settings)
         {
             _appDbContext = appDbContext;
             _currencyAPI = currencyAPI;
             _settings = settings.Value;
             _memoryCache = memoryCache;
+            _settingsService = settingsService;
         }
 
         /// <summary>
@@ -62,11 +66,10 @@ namespace InternalApi.Services
 
             if (data == null)
             {
-                data = await _currencyAPI.GetAllCurrenciesOnDateAsync(_settings.BaseCurrency, date, cancellationToken);
+                data = await _currencyAPI.GetAllCurrenciesOnDateAsync(date, cancellationToken);
 
                 _appDbContext.CurrenciesOnDates.Add(data);
                 await _appDbContext.SaveChangesAsync(cancellationToken);
-
             }
 
             return FindCurrencyByCode(currencyCode, data, dontRound);
@@ -90,11 +93,11 @@ namespace InternalApi.Services
 
             if (currenciesOnDate == null)
             {
-                var currencies = await _currencyAPI.GetAllCurrentCurrenciesAsync(_settings.BaseCurrency, cancellationToken);
+                var currencies = await _currencyAPI.GetAllCurrentCurrenciesAsync(cancellationToken);
 
-                var result = new CurrenciesOnDate { Date = DateTime.UtcNow, Currencies = currencies };
+                currenciesOnDate = new CurrenciesOnDate { Date = DateTime.UtcNow, Currencies = currencies };
 
-                _appDbContext.CurrenciesOnDates.Add(result);
+                _appDbContext.CurrenciesOnDates.Add(currenciesOnDate);
                 await _appDbContext.SaveChangesAsync(cancellationToken);
             }
 
@@ -114,10 +117,9 @@ namespace InternalApi.Services
         {
             var currencyToCacheBaseCurrencyDTO = await GetCurrentCurrencyAsync(currency, cancellationToken, dontRound: true);
 
-            if (!Enum.TryParse(_settings.BaseCurrency, true, out CurrencyCode output))
-                throw new ArgumentException("Базовая валюта кэша неверна.");
+            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
 
-            if (baseCurrency == output)
+            if (baseCurrency == settingsFromDb.BaseCurrency)
                 return currencyToCacheBaseCurrencyDTO.Value;
 
             var baseCurrencyToCacheBaseCurrencyDTO = await GetCurrentCurrencyAsync(baseCurrency, cancellationToken, dontRound: true);
@@ -137,10 +139,9 @@ namespace InternalApi.Services
         {
             var currencyToCacheBaseCurrencyDTO = await GetCurrencyOnDateAsync(currency, date, cancellationToken, dontRound: true);
 
-            if (!Enum.TryParse(_settings.BaseCurrency, true, out CurrencyCode output))
-                throw new ArgumentException("Базовая валюта кэша неверна.");
+            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
 
-            if (baseCurrency == output)
+            if (baseCurrency == settingsFromDb.BaseCurrency)
                 return currencyToCacheBaseCurrencyDTO.Value;
 
             var baseCurrencyToCacheBaseCurrencyDTO = await GetCurrencyOnDateAsync(baseCurrency, date, cancellationToken, dontRound: true);

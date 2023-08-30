@@ -4,6 +4,7 @@ using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using InternalApi.Interfaces;
 using InternalApi.Models;
+using InternalApi.Models.Entities;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text.Json;
@@ -16,13 +17,13 @@ namespace InternalApi.Services
     public class CurrencyHttpClient : ICurrencyApi
     {
         private readonly HttpClient _httpClient;
-
         private readonly CurrencySettings _settings;
+        private readonly ISettingsService _settingsService;
 
-        public CurrencyHttpClient(HttpClient httpClient, IOptionsSnapshot<CurrencySettings> settings)
+        public CurrencyHttpClient(HttpClient httpClient, ISettingsService settingsService, IOptionsSnapshot<CurrencySettings> settings)
         {
             _httpClient = httpClient;
-
+            _settingsService = settingsService;
             _settings = settings.Value;
         }
 
@@ -48,14 +49,15 @@ namespace InternalApi.Services
         /// <summary>
         /// Метод обращения ко всем текущим курсам валют
         /// </summary>
-        /// <param name="baseCurrency">Базовая валюта, к которой считаются курсы</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Текущие курсы всех валют</returns>
-        public async Task<Currency[]> GetAllCurrentCurrenciesAsync(string baseCurrency, CancellationToken cancellationToken)
+        public async Task<Currency[]> GetAllCurrentCurrenciesAsync(CancellationToken cancellationToken)
         {
             await CheckRequestLimit(cancellationToken);
 
-            string url = $"latest?base_currency={baseCurrency.ToUpper()}&apikey={_settings.ApiKey}";
+            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+
+            string url = $"latest?base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
 
             var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
@@ -67,16 +69,17 @@ namespace InternalApi.Services
         /// <summary>
         /// Метод получения всех курсов валют на указанную дату
         /// </summary>
-        /// <param name="baseCurrency">Базовая валюта, к которой считаются курсы</param>
         /// <param name="date">Дата актуальности курсов валют</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Курсы валют на актуальную дату</returns>
-        public async Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(string baseCurrency, DateOnly date, CancellationToken cancellationToken)
+        public async Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(DateOnly date, CancellationToken cancellationToken)
         {
             await CheckRequestLimit(cancellationToken);
 
+            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+
             string url = $"historical?&date={date}" +
-                $"&base_currency={baseCurrency.ToUpper()}&apikey={_settings.ApiKey}";
+                $"&base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
 
             var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
 
@@ -124,10 +127,12 @@ namespace InternalApi.Services
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseStatus>(responseJson);
 
+            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+
             return new GetSettingsResponse()
             {
                 DefaultCurrency = _settings.DefaultCurrency,
-                BaseCurrency = _settings.BaseCurrency,
+                BaseCurrency = Enum.GetName(settingsFromDb.BaseCurrency),
                 RequestLimit = response.Quotas["month"].Total,
                 RequestCount = response.Quotas["month"].Used,
                 CurrencyRoundCount = _settings.CurrencyRoundCount,
