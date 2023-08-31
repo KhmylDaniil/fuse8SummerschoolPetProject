@@ -20,7 +20,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Configurations
             {
                 Id = -1,
                 CurrencyRoundCount = 2,
-                DefaultCurrency = CurrencyCode.Usd
+                DefaultCurrency = CurrencyCode.Rub
             });
         }
     }

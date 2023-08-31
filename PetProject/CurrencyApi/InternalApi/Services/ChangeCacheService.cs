@@ -2,6 +2,7 @@
 using InternalApi.Interfaces;
 using InternalApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace InternalApi.Services
 {
@@ -12,11 +13,13 @@ namespace InternalApi.Services
     {
         private readonly IAppDbContext _appDbContext;
         private readonly ISettingsService _settingsService;
+        private readonly IMemoryCache _memoryCache;
 
-        public ChangeCacheService(IAppDbContext appDbContext, ISettingsService settingsService)
+        public ChangeCacheService(IAppDbContext appDbContext, ISettingsService settingsService, IMemoryCache memoryCache)
         {
             _appDbContext = appDbContext;
             _settingsService = settingsService;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -25,58 +28,56 @@ namespace InternalApi.Services
         /// <param name="currencyCode">Код новой базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Идентификатор задачи</returns>
-        public async Task<Guid> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<ChangeCacheTask> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
         {
             var newTask = new ChangeCacheTask(currencyCode);
 
             _appDbContext.ChangeCacheTasks.Add(newTask);
             await _appDbContext.SaveChangesAsync(cancellationToken);
 
-            return newTask.Id;
+            return newTask;
         }
 
         /// <summary>
         /// Пересчет кеша на новую валюту
         /// </summary>
-        /// <param name="id">Идентификатор задачи</param>
+        /// <param name="task">Задача</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public async Task ProcessChangeCacheTask(Guid id, CancellationToken cancellationToken)
+        public async Task ProcessChangeCacheTask(ChangeCacheTask task, CancellationToken cancellationToken)
         {
-            var task = await _appDbContext.ChangeCacheTasks.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
-
-            if (task is null) return;
+            //привязать таску к changeTracker
+            var entityEntry = _appDbContext.Entry(task);
+            entityEntry.State = EntityState.Modified;
 
             task.CacheTaskStatus = CacheTaskStatus.Processing;
             await _appDbContext.SaveChangesAsync(cancellationToken);
 
             var settings = await _settingsService.GetSettingsAsync(cancellationToken);
 
-            if (settings.BaseCurrency == task.NewBaseCurrency)
+            if (settings.BaseCurrency != task.NewBaseCurrency)
             {
-                task.CacheTaskStatus = CacheTaskStatus.Success;
-                await _appDbContext.SaveChangesAsync(cancellationToken);
+                var cache = await _appDbContext.CurrenciesOnDates.OrderByDescending(x => x.Date).ToListAsync(cancellationToken);
 
-                return;
+                foreach (var item in cache)
+                {
+                    var crossCourse = item.Currencies.First(c => c.Code.Equals(Enum.GetName(task.NewBaseCurrency), StringComparison.OrdinalIgnoreCase)).Value;
+
+                    for (int i = 0; i < item.Currencies.Length; i++)
+                        item.Currencies[i].Value = item.Currencies[i].Value / crossCourse;
+
+                    //вызов сеттера для обновления json поля хранения данных
+                    item.Currencies = item.Currencies;
+                }
+
+                settings.BaseCurrency = task.NewBaseCurrency;
             }
-
-            var cache = await _appDbContext.CurrenciesOnDates.OrderByDescending(x => x.Date).ToListAsync(cancellationToken);
-
-            foreach (var item in cache)
-            {
-                var crossCourse = item.Currencies.FirstOrDefault(c => c.Code.Equals(Enum.GetName(task.NewBaseCurrency), StringComparison.OrdinalIgnoreCase)).Value;
-
-                for(int i = 0; i < item.Currencies.Length; i++)
-                    item.Currencies[i].Value = item.Currencies[i].Value / crossCourse;
-
-                //вызов сеттера для обновления json поля для хранения данных
-                item.Currencies = item.Currencies;
-            }
-
-            settings.BaseCurrency = task.NewBaseCurrency;
+            
             task.CacheTaskStatus = CacheTaskStatus.Success;
-
+            
             await _appDbContext.SaveChangesAsync(cancellationToken);
+
+            _memoryCache.Remove("cur");
         }
     }
 }

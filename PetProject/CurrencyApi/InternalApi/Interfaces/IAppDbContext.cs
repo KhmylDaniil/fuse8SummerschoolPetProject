@@ -1,5 +1,6 @@
 ﻿using InternalApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace InternalApi.Interfaces
 {
@@ -24,5 +25,7 @@ namespace InternalApi.Interfaces
         DbSet<Settings> Settings { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
     }
 }

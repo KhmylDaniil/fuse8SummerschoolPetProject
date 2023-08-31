@@ -15,11 +15,16 @@ namespace InternalApi.Controllers
     {
         private readonly ICachedCurrencyService _cachedCurrencyAPI;
         private readonly IChangeCacheService _changeCacheService;
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
-        public CurrencyController(ICachedCurrencyService cachedCurrencyAPI, IChangeCacheService changeCacheService)
+        public CurrencyController(
+            ICachedCurrencyService cachedCurrencyAPI,
+            IChangeCacheService changeCacheService,
+            IBackgroundTaskQueue backgroundTaskQueue)
         {
             _cachedCurrencyAPI = cachedCurrencyAPI;
             _changeCacheService = changeCacheService;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
 
         /// <summary>
@@ -82,17 +87,12 @@ namespace InternalApi.Controllers
         [HttpPost("changeCache/{currencyCode}")]
         public async Task<IActionResult> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
         {
-            var id = await _changeCacheService.CreateChangeCacheTask(currencyCode, cancellationToken);
+            var task = await _changeCacheService.CreateChangeCacheTask(currencyCode, cancellationToken);
+            
+            await _backgroundTaskQueue.QueueAsync(task);
 
-            return Accepted(id);
+            return Accepted(task.Id);
         }
-
-        [HttpPut("changeCache/{id}")]
-        public async Task ChangeCacheTask(Guid id, CancellationToken cancellationToken)
-        {
-            await _changeCacheService.ProcessChangeCacheTask(id, cancellationToken);
-        }
-
 
         /// <summary>
         /// Запрос текущих настроек приложения

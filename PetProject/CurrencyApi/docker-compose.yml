@@ -4,10 +4,11 @@ services:
   internalapi:
     image: ${DOCKER_REGISTRY-}internalapi
     container_name: ${INTERNAL_API_CONTAINER_NAME}
-
     ports:
         - "9980:${INTERNAL_API_CONTAINER_PORT}"
         - "5700:${INTERNAL_API_CONTAINER_GRPC_PORT}"
+    volumes:
+        - ${HOST_LOGS}/${INTERNAL_API_CONTAINER_NAME}/logs:${INTERNAL_API_CONTAINER_LOGS}
     environment:
         - ASPNETCORE_URLS=http://+:${INTERNAL_API_CONTAINER_PORT};http://+:${INTERNAL_API_CONTAINER_GRPC_PORT}
         - GrpcPort=${INTERNAL_API_CONTAINER_GRPC_PORT}
@@ -22,6 +23,8 @@ services:
     container_name: ${PUBLIC_API_CONTAINER_NAME}
     ports:
         - "9981:${PUBLIC_API_CONTAINER_PORT}"
+    volumes:
+        - ${HOST_LOGS}/${PUBLIC_API_CONTAINER_NAME}/logs:${PUBLIC_API_CONTAINER_LOGS}
     environment:
         - ASPNETCORE_URLS=http://+:${PUBLIC_API_CONTAINER_PORT}
         - GrpcServiceAddress=http://internal_api:${INTERNAL_API_CONTAINER_GRPC_PORT}

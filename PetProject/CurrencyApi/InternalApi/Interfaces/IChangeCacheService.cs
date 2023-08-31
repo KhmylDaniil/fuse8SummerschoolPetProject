@@ -1,4 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
+using InternalApi.Models.Entities;
 
 namespace InternalApi.Interfaces
 {
@@ -13,14 +14,14 @@ namespace InternalApi.Interfaces
         /// <param name="currencyCode">Код новой базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Идентификатор задачи</returns>
-        public Task<Guid> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken);
+        public Task<ChangeCacheTask> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken);
 
         /// <summary>
         /// Пересчет кеша на новую валюту
         /// </summary>
-        /// <param name="id">Идентификатор задачи</param>
+        /// <param name="task">Задача</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public Task ProcessChangeCacheTask(Guid id, CancellationToken cancellationToken);
+        public Task ProcessChangeCacheTask(ChangeCacheTask task, CancellationToken cancellationToken);
     }
 }

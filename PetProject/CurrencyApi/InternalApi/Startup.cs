@@ -15,26 +15,14 @@ public class Startup
 {
     private readonly IConfiguration _configuration;
 
-    public Startup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public Startup(IConfiguration configuration) => _configuration = configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
 
         services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
-
-            // Добавляем глобальные настройки для преобразования Json
-            .AddJsonOptions(
-                options =>
-                {
-                    // Добавляем конвертер для енама
-                    // По умолчанию енам преобразуется в цифровое значение
-                    // Этим конвертером задаем перевод в строковое занчение
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
@@ -52,17 +40,19 @@ public class Startup
         services.AddHttpClient<CurrencyHttpClient>(x =>
             x.BaseAddress = new Uri(_configuration.GetRequiredSection("CurrencySettings").Get<CurrencySettings>().BaseAddress))
             .AddAuditHandler(audit => audit
-            .IncludeRequestHeaders()
-            .IncludeRequestBody()
-            .IncludeResponseHeaders()
-            .IncludeResponseBody()
-            .IncludeContentHeaders());
+                .IncludeRequestHeaders()
+                .IncludeRequestBody()
+                .IncludeResponseHeaders()
+                .IncludeResponseBody()
+                .IncludeContentHeaders());
 
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         services.AddTransient<ISettingsService, SettingsService>();
         services.AddTransient<ICurrencyApi, CurrencyHttpClient>();
         services.AddTransient<ICachedCurrencyService, CachedCurrencyService>();
         services.AddTransient<IChangeCacheService, ChangeCacheService>();
 
+        services.AddHostedService<ChangeCacheBackgroundService>();
 
         services.AddDbContext<AppDbContext>(o =>
         {
