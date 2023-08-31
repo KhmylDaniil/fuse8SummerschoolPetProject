@@ -24,8 +24,19 @@ namespace InternalApi.Interfaces
         /// </summary>
         DbSet<Settings> Settings { get; }
 
+        /// <summary>
+        /// Сохранение изменений в контекст
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Доступ к статусу в трекере изменений
+        /// </summary>
+        /// <typeparam name="TEntity">Тип сущности</typeparam>
+        /// <param name="entity">Сущность в базе</param>
+        /// <returns></returns>
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Exceptions;
 using InternalApi.Models.Entities;
-using System.Runtime.CompilerServices;
 
 namespace InternalApi.Services
 {
@@ -23,12 +22,13 @@ namespace InternalApi.Services
         private readonly CurrencySettings _settings;
 
         /// <summary>
-        /// Конструктор
+        /// Конструктор для <see cref="CachedCurrencyService"/>
         /// </summary>
         /// <param name="appDbContext">Контекст базы данных</param>
         /// <param name="currencyAPI">Сервис доступа к внешнему апи</param>
         /// <param name="memoryCache">Кеш памяти</param>
         /// <param name="settings">Настройки приложения</param>
+        /// <param name="settingsService">Сервис настроек приложения из базы данных</param>
         public CachedCurrencyService(IAppDbContext appDbContext,
             CurrencyHttpClient currencyAPI,
             IMemoryCache memoryCache,
@@ -50,7 +50,7 @@ namespace InternalApi.Services
         /// <param name="cancellationToken">Токен отмены</param>
         /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Модель курса валюты</returns>
-        public async Task<CurrencyDTO> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken, bool dontRound = default)
+        public async Task<CurrencyDto> GetCurrencyOnDateAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken, bool dontRound = default)
         {
             CurrenciesOnDate? data = null;
 
@@ -67,7 +67,7 @@ namespace InternalApi.Services
 
             if (data == null)
             {
-                await WaitIfChangeCacheTaskIsProcessing(cancellationToken);
+                await WaitIfChangeCacheTaskIsProcessingAsync(cancellationToken);
 
                 data = await _currencyAPI.GetAllCurrenciesOnDateAsync(date, cancellationToken);
 
@@ -85,7 +85,7 @@ namespace InternalApi.Services
         /// <param name="cancellationToken">Токен отмены</param>
         /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Модель курса валюты</returns>
-        public async Task<CurrencyDTO> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken, bool dontRound = default)
+        public async Task<CurrencyDto> GetCurrentCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken, bool dontRound = default)
         {
             CurrenciesOnDate? currenciesOnDate = null;
 
@@ -96,7 +96,7 @@ namespace InternalApi.Services
 
             if (currenciesOnDate == null)
             {
-                await WaitIfChangeCacheTaskIsProcessing(cancellationToken);
+                await WaitIfChangeCacheTaskIsProcessingAsync(cancellationToken);
 
                 var currencies = await _currencyAPI.GetAllCurrentCurrenciesAsync(cancellationToken);
 
@@ -155,22 +155,6 @@ namespace InternalApi.Services
         }
 
         /// <summary>
-        /// Метод получения настроек приложения
-        /// </summary>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns>Настройки приложения</returns>
-        public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-            => await _currencyAPI.GetSettingsAsync(cancellationToken);
-
-        /// <summary>
-        /// Проверка связи с внешним апи
-        /// </summary>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns>Ответ на хелчек</returns>
-        public Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
-            => _currencyAPI.HealthCheck(cancellationToken);
-
-        /// <summary>
         /// Нахождение конкретной валюты по коду
         /// </summary>
         /// <param name="currencyCode">Код валюты</param>
@@ -178,14 +162,14 @@ namespace InternalApi.Services
         /// <param name="dontRound">Флаг отмены округления</param>
         /// <returns>Курс валюты</returns>
         /// <exception cref="CurrencyNotFoundException"></exception>
-        private CurrencyDTO FindCurrencyByCode(CurrencyCode currencyCode, CurrenciesOnDate data, bool dontRound)
+        private CurrencyDto FindCurrencyByCode(CurrencyCode currencyCode, CurrenciesOnDate data, bool dontRound)
         {
             var currency = data.Currencies.FirstOrDefault(c => c.Code.Equals(Enum.GetName(currencyCode), StringComparison.OrdinalIgnoreCase))
                 ?? throw new CurrencyNotFoundException();
 
             return dontRound
-                ? new CurrencyDTO(currencyCode, currency.Value)
-                : new CurrencyDTO(currencyCode, (float)Math.Round(currency.Value, _settings.CurrencyRoundCount));
+                ? new CurrencyDto(currencyCode, currency.Value)
+                : new CurrencyDto(currencyCode, (float)Math.Round(currency.Value, _settings.CurrencyRoundCount));
         }
 
         /// <summary>
@@ -193,7 +177,7 @@ namespace InternalApi.Services
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        private async Task WaitIfChangeCacheTaskIsProcessing(CancellationToken cancellationToken)
+        private async Task WaitIfChangeCacheTaskIsProcessingAsync(CancellationToken cancellationToken)
         {
             if (!await _appDbContext.ChangeCacheTasks.AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
                 return;

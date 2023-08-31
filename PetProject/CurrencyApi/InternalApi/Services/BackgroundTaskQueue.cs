@@ -11,6 +11,9 @@ namespace InternalApi.Services
     {
         private readonly Channel<ChangeCacheTask> _queue;
 
+        /// <summary>
+        /// Конструктор для <see cref="BackgroundTaskQueue"/>
+        /// </summary>
         public BackgroundTaskQueue()
         {
             var options = new BoundedChannelOptions(50)

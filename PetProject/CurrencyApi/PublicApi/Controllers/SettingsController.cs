@@ -12,6 +12,10 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
     {
         private readonly ISettingsService _settingsService;
 
+        /// <summary>
+        /// Конструктор для <see cref="SettingsController"/>
+        /// </summary>
+        /// <param name="settingsService">Сервис работы с настройками</param>
         public SettingsController(ISettingsService settingsService)
         {
             _settingsService = settingsService;
@@ -20,6 +24,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <summary>
         /// Изменить код валюты по умолчанию
         /// </summary>
+        /// <param name="currencyCode">Код валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <response code="200">
         /// Возвращает если удалось изменить код валюты
@@ -35,6 +40,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// <summary>
         /// Изменить количество знаков для округления курса валюты
         /// </summary>
+        /// <param name="round">Количество знаков округления</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <response code="200">
         /// Возвращает если удалось изменить количество знаков для округления

@@ -13,6 +13,12 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         private readonly ISettingsService _settingsService;
         private readonly IFavoriteCurrenciesService _favoriteCurrenciesService;
 
+        /// <summary>
+        /// Конструктор для <see cref="GrpcClient"/>
+        /// </summary>
+        /// <param name="grpcClient">Клиент gRPC</param>
+        /// <param name="favoriteCurrenciesService">Сервис работы с избранными курсами валют</param>
+        /// <param name="settingsService">Сервис работы с настройками</param>
         public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient,
             IFavoriteCurrenciesService favoriteCurrenciesService,
             ISettingsService settingsService)

@@ -9,6 +9,7 @@ namespace InternalApi.Configurations
     /// </summary>
     public class ChangeCacheTaskConfiguration : IEntityTypeConfiguration<ChangeCacheTask>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<ChangeCacheTask> builder)
         {
             builder.HasKey(x => x.Id);

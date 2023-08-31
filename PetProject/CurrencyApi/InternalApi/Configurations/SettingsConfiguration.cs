@@ -10,6 +10,7 @@ namespace InternalApi.Configurations
     /// </summary>
     public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Settings> builder)
         {
             builder.HasKey(x => x.Id);

@@ -9,6 +9,7 @@ namespace InternalApi.Configurations
     /// </summary>
     public class CurrenciesOnDateConfiguration : IEntityTypeConfiguration<CurrenciesOnDate>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<CurrenciesOnDate> builder)
         {
             builder.HasKey(x => x.Date);

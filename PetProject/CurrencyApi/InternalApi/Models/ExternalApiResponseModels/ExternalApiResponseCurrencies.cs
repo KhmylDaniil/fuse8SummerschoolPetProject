@@ -7,9 +7,15 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseMod
     /// </summary>
     public class ExternalApiResponseCurrencies
     {
+        /// <summary>
+        /// Метаданные
+        /// </summary>
         [JsonPropertyName("meta")]
         public Dictionary<string, string> Meta { get; set; }
 
+        /// <summary>
+        /// Данные
+        /// </summary>
         [JsonPropertyName("data")]
         public Dictionary<string, Currency> Data { get; set; }
     }

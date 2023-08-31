@@ -13,13 +13,10 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
         private readonly IAppDbContext _appDbContext;
 
         /// <summary>
-        /// Конструктор
+        /// Конструктор для <see cref="FavoriteCurrenciesService"/>
         /// </summary>
         /// <param name="appDbContext">Контекст базы данных</param>
-        public FavoriteCurrenciesService(IAppDbContext appDbContext)
-        {
-            _appDbContext = appDbContext;
-        }
+        public FavoriteCurrenciesService(IAppDbContext appDbContext) => _appDbContext = appDbContext;
 
         /// <summary>
         /// Получить все избранные курсы валют
@@ -57,7 +54,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
         /// <returns></returns>
         public async Task CreateFavoriteCurrencyAsync(string name, CurrencyCode currency, CurrencyCode baseCurrency, CancellationToken cancellationToken)
         {
-            await CheckRequest(name, currency, baseCurrency, cancellationToken);
+            await CheckRequestAsync(name, currency, baseCurrency, cancellationToken);
 
             FavoriteCurrency newFavCur = new(name, currency, baseCurrency);
 
@@ -79,7 +76,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
             var existingFavCur = await _appDbContext.FavoriteCurrencies.FirstOrDefaultAsync(fc => fc.Name == searchName, cancellationToken)
                 ?? throw new ArgumentException(Exceptions.ExceptionMessages.FavCurNotFound);
 
-            await CheckRequest(newName, currency, baseCurrency, cancellationToken);
+            await CheckRequestAsync(newName, currency, baseCurrency, cancellationToken);
 
             existingFavCur.ChangeFavCur(newName, currency, baseCurrency);
 
@@ -109,7 +106,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
         /// <param name="baseCurrency">Код базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        private async Task CheckRequest(string name, CurrencyCode currency, CurrencyCode baseCurrency, CancellationToken cancellationToken)
+        private async Task CheckRequestAsync(string name, CurrencyCode currency, CurrencyCode baseCurrency, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException(Exceptions.ExceptionMessages.NameCantBeNull);

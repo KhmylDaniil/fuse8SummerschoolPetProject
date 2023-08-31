@@ -11,10 +11,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
     {
         private readonly IAppDbContext _appDbContext;
 
-        public SettingsService(IAppDbContext appDbContext)
-        {
-            _appDbContext = appDbContext;
-        }
+        /// <summary>
+        /// Конструктор для <see cref="SettingsService"/>
+        /// </summary>
+        /// <param name="appDbContext"></param>
+        public SettingsService(IAppDbContext appDbContext) => _appDbContext = appDbContext;
 
         /// <summary>
         /// Изменить точность округления

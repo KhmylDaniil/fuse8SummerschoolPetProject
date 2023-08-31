@@ -7,6 +7,12 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities
     /// </summary>
     public class FavoriteCurrency
     {
+        /// <summary>
+        /// Конструктор для <see cref="FavoriteCurrency"/>
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
         public FavoriteCurrency(string name, CurrencyCode currency, CurrencyCode baseCurrency)
         {
             Name = name;
@@ -14,6 +20,9 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities
             BaseCurrency = baseCurrency;
         }
 
+        /// <summary>
+        /// Конструктор для <see cref="FavoriteCurrency"/> для EF
+        /// </summary>
         protected FavoriteCurrency() { }
 
         /// <summary>
@@ -36,6 +45,12 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities
         /// </summary>
         public CurrencyCode BaseCurrency { get; private set; }
 
+        /// <summary>
+        /// Изменить избранную валюту
+        /// </summary>
+        /// <param name="name">Название</param>
+        /// <param name="currency">Код валюты</param>
+        /// <param name="baseCurrency">Код базовой валюты</param>
         public void ChangeFavCur(string name, CurrencyCode currency, CurrencyCode baseCurrency)
         {
             Name = name;

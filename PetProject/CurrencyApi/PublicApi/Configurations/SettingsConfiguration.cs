@@ -9,6 +9,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Configurations
     /// </summary>
     public class SettingsConfiguration : IEntityTypeConfiguration<Settings>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Settings> builder)
         {
             builder.HasKey(x => x.Id);

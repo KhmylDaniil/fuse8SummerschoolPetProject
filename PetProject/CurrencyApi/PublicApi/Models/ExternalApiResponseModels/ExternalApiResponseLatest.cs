@@ -8,10 +8,15 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.ExternalApiResponseModel
     /// </summary>
     public class ExternalApiResponseLatest
     {
+        /// <summary>
+        /// Метаданные
+        /// </summary>
         [JsonPropertyName("meta")]
         public Dictionary<string, string> Meta { get; set; }
 
-
+        /// <summary>
+        /// Данные
+        /// </summary>
         [JsonPropertyName("data")]
         public Dictionary<string, GetCurrencyResponse> Data { get; set; }
     }

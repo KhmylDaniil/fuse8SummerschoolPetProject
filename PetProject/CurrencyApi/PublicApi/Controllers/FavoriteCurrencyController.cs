@@ -13,10 +13,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
     {
         private readonly IFavoriteCurrenciesService _service;
 
-        public FavoriteCurrencyController(IFavoriteCurrenciesService service)
-        {
-            _service = service;
-        }
+        /// <summary>
+        /// Конструктор для <see cref="FavoriteCurrencyController"/>
+        /// </summary>
+        /// <param name="service">Сервис работы с избранными курсами валют</param>
+        public FavoriteCurrencyController(IFavoriteCurrenciesService service) => _service = service;
 
         /// <summary>
         /// Получить все избранные курсы валют

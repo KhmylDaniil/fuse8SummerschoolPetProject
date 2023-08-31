@@ -12,6 +12,12 @@ namespace InternalApi.Services
         private readonly ILogger<ChangeCacheBackgroundService> _logger;
         private readonly IBackgroundTaskQueue _queue;
 
+        /// <summary>
+        /// Конструктор для <see cref="ChangeCacheBackgroundService"/>
+        /// </summary>
+        /// <param name="serviceProvider">Провайдер сервисов</param>
+        /// <param name="logger">Логгер</param>
+        /// <param name="queue">Сервис очереди фоновых задач</param>
         public ChangeCacheBackgroundService(
             IServiceProvider serviceProvider,
             ILogger<ChangeCacheBackgroundService> logger,
@@ -65,7 +71,7 @@ namespace InternalApi.Services
                 {
                     using var scope = _serviceProvider.CreateScope();
                     var workerService = scope.ServiceProvider.GetRequiredService<IChangeCacheService>();
-                    await workerService.ProcessChangeCacheTask(task, stoppingToken);
+                    await workerService.ProcessChangeCacheTaskAsync(task, stoppingToken);
                 }
                 catch (Exception ex)
                 {

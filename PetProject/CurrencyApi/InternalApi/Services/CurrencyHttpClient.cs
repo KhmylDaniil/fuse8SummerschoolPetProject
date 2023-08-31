@@ -20,6 +20,12 @@ namespace InternalApi.Services
         private readonly CurrencySettings _settings;
         private readonly ISettingsService _settingsService;
 
+        /// <summary>
+        /// Конструктор для <see cref="CurrencyHttpClient"/>
+        /// </summary>
+        /// <param name="httpClient"><inheritdoc/></param>
+        /// <param name="settingsService"></param>
+        /// <param name="settings"></param>
         public CurrencyHttpClient(HttpClient httpClient, ISettingsService settingsService, IOptionsSnapshot<CurrencySettings> settings)
         {
             _httpClient = httpClient;
@@ -34,7 +40,7 @@ namespace InternalApi.Services
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         /// <exception cref="CurrencyNotFoundException">Исключение неподдерживаемого кода валюты</exception>
-        public async Task<string> GetStringAsyncWithCheck(string uri, CancellationToken cancellationToken)
+        public async Task<string> GetStringWithCheckAsync(string uri, CancellationToken cancellationToken)
         {
             try
             {
@@ -53,13 +59,13 @@ namespace InternalApi.Services
         /// <returns>Текущие курсы всех валют</returns>
         public async Task<Currency[]> GetAllCurrentCurrenciesAsync(CancellationToken cancellationToken)
         {
-            await CheckRequestLimit(cancellationToken);
+            await CheckRequestLimitAsync(cancellationToken);
 
             var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
 
             string url = $"latest?base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
 
-            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
+            var responseJson = await GetStringWithCheckAsync(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
@@ -74,14 +80,14 @@ namespace InternalApi.Services
         /// <returns>Курсы валют на актуальную дату</returns>
         public async Task<CurrenciesOnDate> GetAllCurrenciesOnDateAsync(DateOnly date, CancellationToken cancellationToken)
         {
-            await CheckRequestLimit(cancellationToken);
+            await CheckRequestLimitAsync(cancellationToken);
 
             var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
 
             string url = $"historical?&date={date}" +
                 $"&base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
 
-            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
+            var responseJson = await GetStringWithCheckAsync(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseCurrencies>(responseJson);
 
@@ -99,7 +105,7 @@ namespace InternalApi.Services
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Ответ на хелчек</returns>
-        public async Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
+        public async Task<HealthCheckResponse> HealthCheckAsync(CancellationToken cancellationToken)
         {
             string url = $"status?apikey={_settings.ApiKey}";
 
@@ -123,7 +129,7 @@ namespace InternalApi.Services
         {
             string url = $"status?apikey={_settings.ApiKey}";
 
-            var responseJson = await GetStringAsyncWithCheck(url, cancellationToken);
+            var responseJson = await GetStringWithCheckAsync(url, cancellationToken);
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseStatus>(responseJson);
 
@@ -145,7 +151,7 @@ namespace InternalApi.Services
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns></returns>
         /// <exception cref="ApiRequestLimitException">Ошибка исчерпания количества обращений к внешнему API</exception>
-        private async Task CheckRequestLimit(CancellationToken cancellationToken)
+        private async Task CheckRequestLimitAsync(CancellationToken cancellationToken)
         {
             var requestLimitCheck = await GetSettingsAsync(cancellationToken);
 

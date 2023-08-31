@@ -2,6 +2,7 @@
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using InternalApi.Interfaces;
 using InternalApi.Models;
+using InternalApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternalApi.Controllers
@@ -16,15 +17,25 @@ namespace InternalApi.Controllers
         private readonly ICachedCurrencyService _cachedCurrencyAPI;
         private readonly IChangeCacheService _changeCacheService;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+        private readonly ICurrencyApi _currencyApi;
 
+        /// <summary>
+        /// Конструктор для <see cref="CurrencyController"/>
+        /// </summary>
+        /// <param name="cachedCurrencyAPI">Сервис получения курса валюты из кеша</param>
+        /// <param name="changeCacheService">Сервис работы с задачами по пересчету кеша</param>
+        /// <param name="backgroundTaskQueue">Очередь фоновых задач по пересчету кеша</param>
+        /// <param name="currencyAPI">Сервис работы с внешним апи</param>
         public CurrencyController(
             ICachedCurrencyService cachedCurrencyAPI,
             IChangeCacheService changeCacheService,
-            IBackgroundTaskQueue backgroundTaskQueue)
+            IBackgroundTaskQueue backgroundTaskQueue,
+            CurrencyHttpClient currencyAPI)
         {
             _cachedCurrencyAPI = cachedCurrencyAPI;
             _changeCacheService = changeCacheService;
             _backgroundTaskQueue = backgroundTaskQueue;
+            _currencyApi = currencyAPI;
         }
 
         /// <summary>
@@ -46,7 +57,7 @@ namespace InternalApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
-        public async Task<CurrencyDTO> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<CurrencyDto> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
             => await _cachedCurrencyAPI.GetCurrentCurrencyAsync(currencyCode, cancellationToken);
 
         /// <summary>
@@ -69,7 +80,7 @@ namespace InternalApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
-        public async Task<CurrencyDTO> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
+        public async Task<CurrencyDto> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
             => await _cachedCurrencyAPI.GetCurrencyOnDateAsync(currencyCode, date, cancellationToken);
 
         /// <summary>
@@ -85,9 +96,9 @@ namespace InternalApi.Controllers
         /// </response>
         /// <returns>Идентификатор задачи</returns>
         [HttpPost("changeCache/{currencyCode}")]
-        public async Task<IActionResult> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateChangeCacheTaskAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
         {
-            var task = await _changeCacheService.CreateChangeCacheTask(currencyCode, cancellationToken);
+            var task = await _changeCacheService.CreateChangeCacheTaskAsync(currencyCode, cancellationToken);
             
             await _backgroundTaskQueue.QueueAsync(task);
 
@@ -107,7 +118,7 @@ namespace InternalApi.Controllers
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
         public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-            => await _cachedCurrencyAPI.GetSettingsAsync(cancellationToken);
+            => await _currencyApi.GetSettingsAsync(cancellationToken);
 
         /// <summary>
         /// Проверка связи с внешним апи
@@ -115,7 +126,7 @@ namespace InternalApi.Controllers
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Ответ на хелчек</returns>
         [HttpGet("ExternalApiHealth")]
-        public async Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
-            => await _cachedCurrencyAPI.HealthCheck(cancellationToken);
+        public async Task<HealthCheckResponse> HealthCheckAsync(CancellationToken cancellationToken)
+            => await _currencyApi.HealthCheckAsync(cancellationToken);
     }
 }

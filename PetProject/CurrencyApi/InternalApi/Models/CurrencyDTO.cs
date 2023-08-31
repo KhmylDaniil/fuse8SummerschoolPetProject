@@ -8,5 +8,5 @@ namespace InternalApi.Models
     /// </summary>
     /// <param name="CurrencyCode">Валюта</param>
     /// <param name="Value">Значение курса</param>
-    public record CurrencyDTO(CurrencyCode CurrencyCode, float Value);
+    public record CurrencyDto(CurrencyCode CurrencyCode, float Value);
 }

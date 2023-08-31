@@ -18,6 +18,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// </summary>
         DbSet<FavoriteCurrency> FavoriteCurrencies { get; }
 
+        /// <summary>
+        /// Запись изменений в базу данных
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

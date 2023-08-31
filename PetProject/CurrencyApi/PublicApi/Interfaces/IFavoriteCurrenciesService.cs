@@ -1,5 +1,4 @@
-﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
-using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
 {

@@ -13,10 +13,11 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
     {
         private readonly IGrpcClient _gprcClient;
 
-        public CurrencyController(IGrpcClient grpcClient)
-        {
-            _gprcClient = grpcClient;
-        }
+        /// <summary>
+        /// Конструктор для <see cref="CurrencyController"/>
+        /// </summary>
+        /// <param name="grpcClient">gRPC клиент</param>
+        public CurrencyController(IGrpcClient grpcClient) => _gprcClient = grpcClient;
 
         /// <summary>
         /// Получить курс валюты по умолчанию

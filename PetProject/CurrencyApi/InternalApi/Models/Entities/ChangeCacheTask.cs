@@ -8,7 +8,7 @@ namespace InternalApi.Models.Entities
     public class ChangeCacheTask
     {
         /// <summary>
-        /// Конструктор
+        /// Конструктор для <see cref="ChangeCacheTask"/>
         /// </summary>
         /// <param name="newBaseCurrency">Код новой базовой валюты</param>
         public ChangeCacheTask(CurrencyCode newBaseCurrency)
@@ -49,10 +49,29 @@ namespace InternalApi.Models.Entities
     /// </summary>
     public enum CacheTaskStatus
     {
+        /// <summary>
+        /// Задача создана
+        /// </summary>
         Created = 0,
+
+        /// <summary>
+        /// Задача в процессе
+        /// </summary>
         Processing,
+
+        /// <summary>
+        /// Задача завершена успешно
+        /// </summary>
         Success,
+
+        /// <summary>
+        /// Задача завершена с ошибкой
+        /// </summary>
         Error,
+
+        /// <summary>
+        /// Задача отменена
+        /// </summary>
         Canceled
     }
 }

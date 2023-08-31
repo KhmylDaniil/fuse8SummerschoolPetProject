@@ -12,12 +12,23 @@ using System.Text.Json.Serialization;
 
 namespace Fuse8_ByteMinds.SummerSchool.InternalApi;
 
+/// <summary>
+/// Стартап
+/// </summary>
 public class Startup
 {
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// Конструктор для <see cref="Startup"/>
+    /// </summary>
+    /// <param name="configuration">Конфигурация</param>
     public Startup(IConfiguration configuration) => _configuration = configuration;
 
+    /// <summary>
+    /// Конфигурация сервисов
+    /// </summary>
+    /// <param name="services">Коллекция сервисов</param>
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
@@ -95,6 +106,11 @@ public class Startup
     .AddNpgSql(_configuration.GetConnectionString("Default"));
     }
 
+    /// <summary>
+    /// Конфигурация билдера
+    /// </summary>
+    /// <param name="app">Билдер</param>
+    /// <param name="env">Окружение</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())

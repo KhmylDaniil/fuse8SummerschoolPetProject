@@ -10,7 +10,7 @@ namespace InternalApi
     public class AppDbContext : DbContext, IAppDbContext
     {
         /// <summary>
-        /// Конструктор
+        /// Конструктор для <see cref="AppDbContext"/>
         /// </summary>
         /// <param name="options">Опции</param>
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

@@ -15,6 +15,12 @@ namespace InternalApi.Services
         private readonly ISettingsService _settingsService;
         private readonly IMemoryCache _memoryCache;
 
+        /// <summary>
+        /// Конструктор для <see cref="ChangeCacheService"/>
+        /// </summary>
+        /// <param name="appDbContext">Контекст базы данных</param>
+        /// <param name="settingsService">Сервис настроек приложения</param>
+        /// <param name="memoryCache">Кеш памяти</param>
         public ChangeCacheService(IAppDbContext appDbContext, ISettingsService settingsService, IMemoryCache memoryCache)
         {
             _appDbContext = appDbContext;
@@ -28,7 +34,7 @@ namespace InternalApi.Services
         /// <param name="currencyCode">Код новой базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Идентификатор задачи</returns>
-        public async Task<ChangeCacheTask> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<ChangeCacheTask> CreateChangeCacheTaskAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
         {
             var newTask = new ChangeCacheTask(currencyCode);
 
@@ -44,7 +50,7 @@ namespace InternalApi.Services
         /// <param name="task">Задача</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public async Task ProcessChangeCacheTask(ChangeCacheTask task, CancellationToken cancellationToken)
+        public async Task ProcessChangeCacheTaskAsync(ChangeCacheTask task, CancellationToken cancellationToken)
         {
             //привязать таску к changeTracker
             var entityEntry = _appDbContext.Entry(task);

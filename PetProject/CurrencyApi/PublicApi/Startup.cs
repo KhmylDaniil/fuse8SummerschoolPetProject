@@ -11,32 +11,31 @@ using System.Text.Json.Serialization;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi;
 
+/// <summary>
+/// Стартап
+/// </summary>
 public class Startup
 {
     private readonly IConfiguration _configuration;
 
-    public Startup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    /// <summary>
+    /// Конструктор для <see cref="Startup"/>
+    /// </summary>
+    /// <param name="configuration">Конфигурация</param>
+    public Startup(IConfiguration configuration) => _configuration = configuration;
 
+    /// <summary>
+    /// Конфигурация сервисов
+    /// </summary>
+    /// <param name="services">Коллекция сервисов</param>
     public void ConfigureServices(IServiceCollection services)
 	{
         services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
 
         services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-			// Добавляем глобальные настройки для преобразования Json
-			.AddJsonOptions(
-				options =>
-				{
-					// Добавляем конвертер для енама
-					// По умолчанию енам преобразуется в цифровое значение
-					// Этим конвертером задаем перевод в строковое занчение
-					options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-				});
-
-		services.AddEndpointsApiExplorer();
+        services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(c =>
 		{
             c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo()
@@ -63,11 +62,9 @@ public class Startup
                 return auditEvent.ToJson();
             }));
 
-		services.AddGrpcClient<GrpcDocument.GrpcDocumentClient>(c =>
-		{
-			c.Address = new Uri(_configuration.GetValue<string>("GrpcServiceAddress"));
-		})
-			.AddAuditHandler(a => a.IncludeRequestBody());
+		services.AddGrpcClient<GrpcDocument.GrpcDocumentClient>(c => 
+            c.Address = new Uri(_configuration.GetValue<string>("GrpcServiceAddress")))
+			    .AddAuditHandler(a => a.IncludeRequestBody());
 
 		services.AddTransient<IGrpcClient, GrpcClient>();
 
@@ -95,6 +92,11 @@ public class Startup
 			.AddNpgSql(_configuration.GetConnectionString("Default"));
     }
 
+    /// <summary>
+    /// Конфигурация билдера
+    /// </summary>
+    /// <param name="app">Билдер</param>
+    /// <param name="env">Окружение</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 	{
 		if (env.IsDevelopment())

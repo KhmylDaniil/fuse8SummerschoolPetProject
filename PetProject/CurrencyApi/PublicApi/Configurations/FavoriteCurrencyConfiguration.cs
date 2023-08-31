@@ -9,6 +9,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Configurations
     /// </summary>
     public class FavoriteCurrencyConfiguration : IEntityTypeConfiguration<FavoriteCurrency>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<FavoriteCurrency> builder)
         {
             builder.HasKey(x => x.Id);

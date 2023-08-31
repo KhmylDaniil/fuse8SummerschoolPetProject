@@ -1,6 +1,5 @@
 using Fuse8_ByteMinds.SummerSchool.PublicApi;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
 public class Program

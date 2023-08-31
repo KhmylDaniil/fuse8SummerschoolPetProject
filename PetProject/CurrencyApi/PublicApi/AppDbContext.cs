@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fuse8_ByteMinds.SummerSchool.PublicApi
 {
+    /// <summary>
+    /// Контекст базы данных
+    /// </summary>
     public class AppDbContext : DbContext, IAppDbContext
     {
         /// <summary>

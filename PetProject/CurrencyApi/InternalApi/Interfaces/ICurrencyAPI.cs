@@ -38,6 +38,6 @@ namespace InternalApi.Interfaces
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Ответ на хелчек</returns>
-        public Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken);
+        public Task<HealthCheckResponse> HealthCheckAsync(CancellationToken cancellationToken);
     }
 }

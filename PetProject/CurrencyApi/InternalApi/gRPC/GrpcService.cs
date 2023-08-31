@@ -1,6 +1,7 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
 using Grpc.Core;
 using InternalApi.Interfaces;
+using InternalApi.Services;
 
 namespace InternalApi.gRPC
 {
@@ -9,11 +10,18 @@ namespace InternalApi.gRPC
     /// </summary>
     public class GrpcService : GrpcDocument.GrpcDocumentBase
     {
-        private readonly ICachedCurrencyService _cachedCurrencyAPI;
+        private readonly ICachedCurrencyService _cachedCurrencyApi;
+        private readonly ICurrencyApi _currencyApi;
 
-        public GrpcService(ICachedCurrencyService cachedCurrencyAPI)
+        /// <summary>
+        /// Конструктор для <see cref="GrpcService"/>
+        /// </summary>
+        /// <param name="cachedCurrencyApi">Сервис для получения курсов валют</param>
+        /// <param name="currencyHttpClient">Сервис для работы с внешним апи</param>
+        public GrpcService(ICachedCurrencyService cachedCurrencyApi, CurrencyHttpClient currencyHttpClient)
         {
-            _cachedCurrencyAPI = cachedCurrencyAPI;
+            _cachedCurrencyApi = cachedCurrencyApi;
+            _currencyApi = currencyHttpClient;
         }
 
         /// <summary>
@@ -24,7 +32,7 @@ namespace InternalApi.gRPC
         /// <returns>Ответ на запрос валюты по коду</returns>
         public override async Task<CurrencyResponse> GetLatestAsync(CurrencyRequest request, ServerCallContext context)
         {
-            var response = await _cachedCurrencyAPI.GetCurrentCurrencyAsync(
+            var response = await _cachedCurrencyApi.GetCurrentCurrencyAsync(
                 currencyCode: request.CurrencyCode,
                 cancellationToken: default,
                 dontRound: true);
@@ -44,7 +52,7 @@ namespace InternalApi.gRPC
         /// <returns>Значение избранного курса валюты по названию</returns>
         public override async Task<FavoriteCurrencyResponse> GetLatestFavoriteCurrencyAsync(FavoriteCurrencyRequest request, ServerCallContext context)
         {
-            var response = await _cachedCurrencyAPI.GetFavoredCurrencyAsync(request.Currency, request.BaseCurrency, default);
+            var response = await _cachedCurrencyApi.GetFavoredCurrencyAsync(request.Currency, request.BaseCurrency, default);
 
             return new FavoriteCurrencyResponse
             {
@@ -62,7 +70,7 @@ namespace InternalApi.gRPC
         /// <returns>Ответ на запрос валюты по коду</returns>
         public override async Task<CurrencyResponse> GetHistoricalAsync(CurrencyRequestWithDate request, ServerCallContext context)
         {
-            var response = await _cachedCurrencyAPI.GetCurrencyOnDateAsync(
+            var response = await _cachedCurrencyApi.GetCurrencyOnDateAsync(
                 currencyCode: request.CurrencyCode,
                 date: DateOnly.FromDateTime(request.Date.ToDateTime()),
                 cancellationToken: default,
@@ -83,7 +91,7 @@ namespace InternalApi.gRPC
         /// <returns>Значение избранного курса валюты по названию</returns>
         public override async Task<FavoriteCurrencyResponse> GetHistoricalFavoriteCurrencyAsync(HistoricalFavoriteCurrencyRequest request, ServerCallContext context)
         {
-            var response = await _cachedCurrencyAPI.GetFavoredCurrencyHistoricalAsync(
+            var response = await _cachedCurrencyApi.GetFavoredCurrencyHistoricalAsync(
                 currency: request.Currency,
                 baseCurrency: request.BaseCurrency,
                 date: DateOnly.FromDateTime(request.Date.ToDateTime()),
@@ -105,7 +113,7 @@ namespace InternalApi.gRPC
         /// <returns>Настройки приложения</returns>
         public override async Task<SettingsResponse> GetSettingsAsync(SettingsRequest request, ServerCallContext context)
         {
-            var response = await _cachedCurrencyAPI.GetSettingsAsync(default);
+            var response = await _currencyApi.GetSettingsAsync(default);
 
             return new SettingsResponse
             {

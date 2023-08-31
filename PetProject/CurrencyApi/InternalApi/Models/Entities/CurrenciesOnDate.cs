@@ -10,6 +10,9 @@ namespace InternalApi.Models.Entities
     {
         private Currency[] _currencies;
 
+        /// <summary>
+        /// Значения курсов валют в json формате
+        /// </summary>
         public string CurrenciesAsJson { get; set; }
 
         /// <summary>

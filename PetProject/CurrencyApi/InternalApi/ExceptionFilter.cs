@@ -12,11 +12,13 @@ namespace Fuse8_ByteMinds.SummerSchool.InternalApi
     {
         private readonly ILogger _logger;
 
-        public ExceptionFilter(ILogger logger)
-        {
-            _logger = logger;
-        }
+        /// <summary>
+        /// Конструктор для <see cref="ExceptionFilter"/>
+        /// </summary>
+        /// <param name="logger">Логгер</param>
+        public ExceptionFilter(ILogger logger) => _logger = logger;
 
+        /// <inheritdoc/>
         public void OnException(ExceptionContext context)
         {
             switch (context.Exception)

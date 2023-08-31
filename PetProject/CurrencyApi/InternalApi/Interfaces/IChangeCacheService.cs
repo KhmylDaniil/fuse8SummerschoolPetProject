@@ -14,7 +14,7 @@ namespace InternalApi.Interfaces
         /// <param name="currencyCode">Код новой базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Идентификатор задачи</returns>
-        public Task<ChangeCacheTask> CreateChangeCacheTask(CurrencyCode currencyCode, CancellationToken cancellationToken);
+        public Task<ChangeCacheTask> CreateChangeCacheTaskAsync(CurrencyCode currencyCode, CancellationToken cancellationToken);
 
         /// <summary>
         /// Пересчет кеша на новую валюту
@@ -22,6 +22,6 @@ namespace InternalApi.Interfaces
         /// <param name="task">Задача</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public Task ProcessChangeCacheTask(ChangeCacheTask task, CancellationToken cancellationToken);
+        public Task ProcessChangeCacheTaskAsync(ChangeCacheTask task, CancellationToken cancellationToken);
     }
 }
