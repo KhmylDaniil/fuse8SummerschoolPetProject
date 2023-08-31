@@ -4,9 +4,16 @@ services:
   internalapi:
     image: ${DOCKER_REGISTRY-}internalapi
     container_name: ${INTERNAL_API_CONTAINER_NAME}
+    restart: unless-stopped
     ports:
         - "9980:${INTERNAL_API_CONTAINER_PORT}"
         - "5700:${INTERNAL_API_CONTAINER_GRPC_PORT}"
+    healthcheck:
+        test: curl --fail http://localhost:${INTERNAL_API_CONTAINER_PORT}/health || exit 1
+        interval: 30s
+        retries: 3
+        start_period: 10s
+        timeout: 10s
     volumes:
         - ${HOST_LOGS}/${INTERNAL_API_CONTAINER_NAME}/logs:${INTERNAL_API_CONTAINER_LOGS}
     environment:
@@ -21,8 +28,15 @@ services:
   publicapi:
     image: ${DOCKER_REGISTRY-}publicapi
     container_name: ${PUBLIC_API_CONTAINER_NAME}
+    restart: unless-stopped
     ports:
         - "9981:${PUBLIC_API_CONTAINER_PORT}"
+    healthcheck:
+        test: curl --fail http://localhost:${PUBLIC_API_CONTAINER_PORT}/health || exit 1
+        interval: 30s
+        retries: 3
+        start_period: 10s
+        timeout: 10s
     volumes:
         - ${HOST_LOGS}/${PUBLIC_API_CONTAINER_NAME}/logs:${PUBLIC_API_CONTAINER_LOGS}
     environment:

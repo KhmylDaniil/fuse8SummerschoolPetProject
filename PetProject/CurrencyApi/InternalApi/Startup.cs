@@ -6,6 +6,7 @@ using InternalApi.Interfaces;
 using InternalApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -84,6 +85,14 @@ public class Startup
         services.AddGrpc();
 
         services.AddMemoryCache(options => options.ExpirationScanFrequency = TimeSpan.FromHours(2));
+
+        services.AddHealthChecks()
+    .AddCheck("LogHealthy", () =>
+    {
+        Console.WriteLine("Log is healthy");
+        return HealthCheckResult.Healthy();
+    })
+    .AddNpgSql(_configuration.GetConnectionString("Default"));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -110,7 +119,11 @@ public class Startup
             configuration: apiBuilder =>
             {
                 apiBuilder.UseRouting()
-                .UseEndpoints(endpoints => endpoints.MapControllers());
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapHealthChecks("/health");
+                });
             });
     }
 }

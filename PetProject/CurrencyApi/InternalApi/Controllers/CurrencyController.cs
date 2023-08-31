@@ -114,7 +114,7 @@ namespace InternalApi.Controllers
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Ответ на хелчек</returns>
-        [HttpGet("Healthcheck")]
+        [HttpGet("ExternalApiHealth")]
         public async Task<HealthCheckResponse> HealthCheck(CancellationToken cancellationToken)
             => await _cachedCurrencyAPI.HealthCheck(cancellationToken);
     }

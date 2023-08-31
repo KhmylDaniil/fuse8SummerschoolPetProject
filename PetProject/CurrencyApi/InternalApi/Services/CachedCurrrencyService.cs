@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Fuse8_ByteMinds.SummerSchool.InternalApi.Exceptions;
 using InternalApi.Models.Entities;
+using System.Runtime.CompilerServices;
 
 namespace InternalApi.Services
 {
@@ -66,6 +67,8 @@ namespace InternalApi.Services
 
             if (data == null)
             {
+                await WaitIfChangeCacheTaskIsProcessing(cancellationToken);
+
                 data = await _currencyAPI.GetAllCurrenciesOnDateAsync(date, cancellationToken);
 
                 _appDbContext.CurrenciesOnDates.Add(data);
@@ -93,6 +96,8 @@ namespace InternalApi.Services
 
             if (currenciesOnDate == null)
             {
+                await WaitIfChangeCacheTaskIsProcessing(cancellationToken);
+
                 var currencies = await _currencyAPI.GetAllCurrentCurrenciesAsync(cancellationToken);
 
                 currenciesOnDate = new CurrenciesOnDate { Date = DateTime.UtcNow, Currencies = currencies };
@@ -181,6 +186,22 @@ namespace InternalApi.Services
             return dontRound
                 ? new CurrencyDTO(currencyCode, currency.Value)
                 : new CurrencyDTO(currencyCode, (float)Math.Round(currency.Value, _settings.CurrencyRoundCount));
+        }
+
+        /// <summary>
+        /// Проверка наличия задач по пересчету кеша и смене базовой валюты
+        /// </summary>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        private async Task WaitIfChangeCacheTaskIsProcessing(CancellationToken cancellationToken)
+        {
+            if (!await _appDbContext.ChangeCacheTasks.AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
+                return;
+
+            await Task.Delay(10_000, cancellationToken);
+
+            if (await _appDbContext.ChangeCacheTasks.AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
+                throw new ArgumentException("Превышено время ожидания работы задачи по пересчету кеша и смене базовой валюты.");
         }
     }
 }

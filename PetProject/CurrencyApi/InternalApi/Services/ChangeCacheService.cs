@@ -74,10 +74,10 @@ namespace InternalApi.Services
             }
             
             task.CacheTaskStatus = CacheTaskStatus.Success;
-            
-            await _appDbContext.SaveChangesAsync(cancellationToken);
 
             _memoryCache.Remove("cur");
+
+            await _appDbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }
