@@ -16,10 +16,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// Конструктор для <see cref="SettingsController"/>
         /// </summary>
         /// <param name="settingsService">Сервис работы с настройками</param>
-        public SettingsController(ISettingsService settingsService)
-        {
-            _settingsService = settingsService;
-        }
+        public SettingsController(ISettingsService settingsService) => _settingsService = settingsService;
 
         /// <summary>
         /// Изменить код валюты по умолчанию
@@ -34,8 +31,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns></returns>
         [HttpPut("changeCurrency")]
-        public async Task ChangeDefaultCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
-            => await _settingsService.ChangeDefaultCurrencyAsync(currencyCode, cancellationToken);
+        public Task ChangeDefaultCurrencyAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+            => _settingsService.ChangeDefaultCurrencyAsync(currencyCode, cancellationToken);
 
         /// <summary>
         /// Изменить количество знаков для округления курса валюты
@@ -50,7 +47,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns></returns>
         [HttpPut("changeRoundCount")]
-        public async Task ChangeCurrencyRoundCountAsync(int round, CancellationToken cancellationToken)
-            => await _settingsService.ChangeCurrencyRoundCountAsync(round, cancellationToken);
+        public Task ChangeCurrencyRoundCountAsync(int round, CancellationToken cancellationToken)
+            => _settingsService.ChangeCurrencyRoundCountAsync(round, cancellationToken);
     }
 }

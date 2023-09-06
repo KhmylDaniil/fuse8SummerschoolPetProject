@@ -12,6 +12,6 @@ namespace InternalApi.Interfaces
         /// </summary>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Настройки приложения</returns>
-        public Task<Settings> GetSettingsAsync(CancellationToken cancellationToken);
+        Task<Settings> GetSettingsAsync(CancellationToken cancellationToken);
     }
 }

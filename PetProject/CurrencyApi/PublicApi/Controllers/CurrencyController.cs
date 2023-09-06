@@ -37,8 +37,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet]
-        public async Task<GetCurrencyResponse> GetLatestAsync(CancellationToken cancellationToken)
-            => await _gprcClient.GetCurrencyResponseAsync(null, cancellationToken);
+        public Task<GetCurrencyResponse> GetLatestAsync(CancellationToken cancellationToken)
+            => _gprcClient.GetCurrencyResponseAsync(null, cancellationToken);
 
         /// <summary>
         /// Получить курс валюты по коду
@@ -59,8 +59,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты на последнюю дату</returns>
         [HttpGet("{currencyCode}")]
-        public async Task<GetCurrencyResponse> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
-            => await _gprcClient.GetCurrencyResponseAsync(currencyCode, cancellationToken);
+        public Task<GetCurrencyResponse> GetLatestAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+            => _gprcClient.GetCurrencyResponseAsync(currencyCode, cancellationToken);
 
         /// <summary>
         /// Получить избранный курс валюты по названию
@@ -78,8 +78,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Значение избранного курса валюты на последнюю дату</returns>
         [HttpGet("FavCur/{favCurName}")]
-        public async Task<GetFavoredCurrencyValueResponse> GetLatestFavoriteCurrencyAsync(string favCurName, CancellationToken cancellationToken)
-            => await _gprcClient.GetFavoredCurrencyAsync(favCurName, cancellationToken);
+        public Task<GetFavoredCurrencyValueResponse> GetLatestFavoriteCurrencyAsync(string favCurName, CancellationToken cancellationToken)
+            => _gprcClient.GetFavoredCurrencyAsync(favCurName, cancellationToken);
 
         /// <summary>
         /// Получить избранный курс валюты по названию на дату актуальности
@@ -98,8 +98,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Значение избранного курса валюты на последнюю дату</returns>
         [HttpGet("FavCur/{favCurName}/{date}")]
-        public async Task<GetFavoredCurrencyValueResponse> GetHistoricalFavoriteCurrencyAsync(string favCurName, DateOnly date, CancellationToken cancellationToken)
-            => await _gprcClient.GetFavoredCurrencyHistoricalAsync(favCurName, date, cancellationToken);
+        public Task<GetFavoredCurrencyValueResponse> GetHistoricalFavoriteCurrencyAsync(string favCurName, DateOnly date, CancellationToken cancellationToken)
+            => _gprcClient.GetFavoredCurrencyHistoricalAsync(favCurName, date, cancellationToken);
 
         /// <summary>
         /// Получить курс валюты по коду с указанием даты актуальности
@@ -121,8 +121,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос курса валюты с указанием даты актуальности курса</returns>
         [HttpGet("{currencyCode}/{date}")]
-        public async Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
-            => await _gprcClient.GetHistoricalAsync(currencyCode, date, cancellationToken);
+        public Task<GetCurrencyHistoricalResponse> GetHistoricalAsync(CurrencyCode currencyCode, DateOnly date, CancellationToken cancellationToken)
+            => _gprcClient.GetHistoricalAsync(currencyCode, date, cancellationToken);
 
         /// <summary>
         /// Запрос текущих настроек приложения
@@ -136,7 +136,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Ответ на запрос текущих настроек приложения</returns>
         [HttpGet("Settings")]
-        public async Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
-            => await _gprcClient.GetSettingsAsync(cancellationToken);
+        public Task<GetSettingsResponse> GetSettingsAsync(CancellationToken cancellationToken)
+            => _gprcClient.GetSettingsAsync(cancellationToken);
     }
 }

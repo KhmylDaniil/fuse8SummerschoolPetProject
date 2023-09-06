@@ -34,27 +34,28 @@ namespace InternalApi.Services
         /// <param name="currencyCode">Код новой базовой валюты</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Идентификатор задачи</returns>
-        public async Task<ChangeCacheTask> CreateChangeCacheTaskAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
+        public async Task<Guid> CreateChangeCacheTaskAsync(CurrencyCode currencyCode, CancellationToken cancellationToken)
         {
             var newTask = new ChangeCacheTask(currencyCode);
 
             _appDbContext.ChangeCacheTasks.Add(newTask);
             await _appDbContext.SaveChangesAsync(cancellationToken);
 
-            return newTask;
+            return newTask.Id;
         }
 
         /// <summary>
         /// Пересчет кеша на новую валюту
         /// </summary>
-        /// <param name="task">Задача</param>
+        /// <param name="taskId">Идентификатор задачи по пересчету кеша</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        public async Task ProcessChangeCacheTaskAsync(ChangeCacheTask task, CancellationToken cancellationToken)
+        public async Task ProcessChangeCacheTaskAsync(Guid taskId, CancellationToken cancellationToken)
         {
-            //привязать таску к changeTracker
-            var entityEntry = _appDbContext.Entry(task);
-            entityEntry.State = EntityState.Modified;
+            var task = await _appDbContext.ChangeCacheTasks.FirstOrDefaultAsync(x => x.Id == taskId, cancellationToken);
+
+            if (task == null)
+                return;
 
             task.CacheTaskStatus = CacheTaskStatus.Processing;
             await _appDbContext.SaveChangesAsync(cancellationToken);
@@ -81,7 +82,7 @@ namespace InternalApi.Services
             
             task.CacheTaskStatus = CacheTaskStatus.Success;
 
-            _memoryCache.Remove("cur");
+            _memoryCache.Remove(Constants.CashedCurrencyData);
 
             await _appDbContext.SaveChangesAsync(cancellationToken);
         }

@@ -56,7 +56,7 @@ namespace InternalApi.Services
 
             DateTime actualityDateTime = date.ToDateTime(new TimeOnly(0, 0), DateTimeKind.Utc);
 
-            if (_memoryCache.TryGetValue("cur", out CurrenciesOnDate? cachedOutput)
+            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CurrenciesOnDate? cachedOutput)
                 && actualityDateTime >= cachedOutput?.Date
                 && actualityDateTime.AddDays(1) <= cachedOutput?.Date)
                     data = cachedOutput;
@@ -89,7 +89,7 @@ namespace InternalApi.Services
         {
             CurrenciesOnDate? currenciesOnDate = null;
 
-            if (_memoryCache.TryGetValue("cur", out CurrenciesOnDate? cachedOutput) && DateTime.UtcNow - cachedOutput?.Date <= new TimeSpan(2, 0, 0))
+            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CurrenciesOnDate? cachedOutput) && DateTime.UtcNow - cachedOutput?.Date <= new TimeSpan(2, 0, 0))
                 currenciesOnDate = cachedOutput;
 
             currenciesOnDate ??= await _appDbContext.CurrenciesOnDates.OrderBy(c => c.Date).LastOrDefaultAsync(cancellationToken);
@@ -106,7 +106,7 @@ namespace InternalApi.Services
                 await _appDbContext.SaveChangesAsync(cancellationToken);
             }
 
-            _memoryCache.Set("cur", currenciesOnDate);
+            _memoryCache.Set(Constants.CashedCurrencyData, currenciesOnDate);
 
             return FindCurrencyByCode(currencyCode, currenciesOnDate, dontRound);
         }

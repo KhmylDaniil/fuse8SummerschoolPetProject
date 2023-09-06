@@ -1,5 +1,4 @@
 ﻿using InternalApi.Interfaces;
-using InternalApi.Models.Entities;
 using System.Threading.Channels;
 
 namespace InternalApi.Services
@@ -9,7 +8,7 @@ namespace InternalApi.Services
     /// </summary>
     public class BackgroundTaskQueue: IBackgroundTaskQueue
     {
-        private readonly Channel<ChangeCacheTask> _queue;
+        private readonly Channel<WorkItem> _queue;
 
         /// <summary>
         /// Конструктор для <see cref="BackgroundTaskQueue"/>
@@ -20,23 +19,29 @@ namespace InternalApi.Services
             {
                 FullMode = BoundedChannelFullMode.Wait
             };
-            _queue = Channel.CreateBounded<ChangeCacheTask>(options);
+            _queue = Channel.CreateBounded<WorkItem>(options);
         }
 
         /// <summary>
         /// Записать в очередь
         /// </summary>
-        /// <param name="task">Задача пересчета кеша</param>
+        /// <param name="command">Модель для хранения идентификатора задачи</param>
         /// <returns></returns>
-        public ValueTask QueueAsync(ChangeCacheTask task)
-            => _queue.Writer.WriteAsync(task);
+        public ValueTask QueueAsync(WorkItem command)
+            => _queue.Writer.WriteAsync(command);
 
         /// <summary>
         /// Вывести из очереди
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>Задача по пересчету кеша</returns>
-        public ValueTask<ChangeCacheTask> DequeueAsync(CancellationToken cancellationToken)
+        public ValueTask<WorkItem> DequeueAsync(CancellationToken cancellationToken)
             => _queue.Reader.ReadAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Модель для хранения идентификатора задачи
+    /// </summary>
+    /// <param name="TaskId">Идентификатор задачи</param>
+    public record WorkItem(Guid TaskId);
 }

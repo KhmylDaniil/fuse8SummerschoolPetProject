@@ -31,8 +31,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Все избранные курсы валют</returns>
         [HttpGet]
-        public async Task<IEnumerable<GetFavoredCurrencyResponse>> GetAllFavoriveCurrenciesAsync(CancellationToken cancellationToken)
-            => await _service.GetFavoriteCurrenciesAsync(cancellationToken);
+        public Task<IEnumerable<GetFavoredCurrencyResponse>> GetAllFavoriveCurrenciesAsync(CancellationToken cancellationToken)
+            => _service.GetFavoriteCurrenciesAsync(cancellationToken);
 
         /// <summary>
         /// Получить избранный курс валюты по названию
@@ -47,8 +47,8 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Избранный курс валюты</returns>
         [HttpGet("{name}")]
-        public async Task<GetFavoredCurrencyResponse> GetFavoriveCurrencyByNameAsync(string name, CancellationToken cancellationToken)
-            => await _service.GetFavoriteCurrencyAsync(name, cancellationToken);
+        public Task<GetFavoredCurrencyResponse> GetFavoriveCurrencyByNameAsync(string name, CancellationToken cancellationToken)
+            => _service.GetFavoriteCurrencyAsync(name, cancellationToken);
 
         /// <summary>
         /// Создать избранный курс валюты
@@ -88,13 +88,13 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns></returns>
         [HttpPut]
-        public async Task EditFavoriveCurrencyByNameAsync(
+        public Task EditFavoriveCurrencyByNameAsync(
             string searchName,
             string newName,
             CurrencyCode currency,
             CurrencyCode baseCurrency,
             CancellationToken cancellationToken)
-                => await _service.EditFavoriteCurrencyAsync(searchName, newName, currency, baseCurrency, cancellationToken);
+                => _service.EditFavoriteCurrencyAsync(searchName, newName, currency, baseCurrency, cancellationToken);
 
         /// <summary>
         /// Удалить избранный курс валюты по названию
@@ -109,7 +109,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Избранный курс валюты</returns>
         [HttpDelete]
-        public async Task DeleteFavoriveCurrencyByNameAsync(string name, CancellationToken cancellationToken)
-            => await _service.DeleteFavoriteCurrencyAsync(name, cancellationToken);
+        public Task DeleteFavoriveCurrencyByNameAsync(string name, CancellationToken cancellationToken)
+            => _service.DeleteFavoriteCurrencyAsync(name, cancellationToken);
     }
 }

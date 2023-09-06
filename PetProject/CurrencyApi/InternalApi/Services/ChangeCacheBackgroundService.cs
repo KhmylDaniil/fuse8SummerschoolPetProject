@@ -46,12 +46,13 @@ namespace InternalApi.Services
 
             if (tasks.Any())
             {
-                await _queue.QueueAsync(tasks[0]);
-
                 for (int i = 1; i < tasks.Count; i++)
                     tasks[i].CacheTaskStatus = Models.Entities.CacheTaskStatus.Canceled;
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                await _queue.QueueAsync(new WorkItem(tasks[0].Id));
             }
-            await dbContext.SaveChangesAsync(cancellationToken);
 
             await base.StartAsync(cancellationToken);
         }
@@ -65,20 +66,22 @@ namespace InternalApi.Services
         {
             while(!stoppingToken.IsCancellationRequested)
             {
-                var task = await _queue.DequeueAsync(stoppingToken);
+                var command = await _queue.DequeueAsync(stoppingToken);
 
                 try
                 {
                     using var scope = _serviceProvider.CreateScope();
                     var workerService = scope.ServiceProvider.GetRequiredService<IChangeCacheService>();
-                    await workerService.ProcessChangeCacheTaskAsync(task, stoppingToken);
+                    await workerService.ProcessChangeCacheTaskAsync(command.TaskId, stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     using var scope = _serviceProvider.CreateScope();
                     
                     var dbContext = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
-                    
+
+                    var task = await dbContext.ChangeCacheTasks.FirstOrDefaultAsync(x => x.Id == command.TaskId, stoppingToken);
+
                     task.CacheTaskStatus = Models.Entities.CacheTaskStatus.Error;
                     await dbContext.SaveChangesAsync(stoppingToken);
 
