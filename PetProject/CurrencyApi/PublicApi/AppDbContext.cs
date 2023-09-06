@@ -7,7 +7,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi
     /// <summary>
     /// Контекст базы данных
     /// </summary>
-    public class AppDbContext : DbContext, IAppDbContext
+    public class AppDbContext : DbContext
     {
         /// <summary>
         /// Конструктор

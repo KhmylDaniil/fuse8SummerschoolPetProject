@@ -11,7 +11,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Protobuf Include="protos\GrpcDocument.proto" GprsServices="Server" />
+		<Protobuf Include="protos\CurrencyApi.proto" GprsServices="Server" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="7.0.0" />

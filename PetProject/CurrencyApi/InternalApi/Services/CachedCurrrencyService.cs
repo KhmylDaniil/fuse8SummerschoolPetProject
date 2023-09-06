@@ -15,7 +15,7 @@ namespace InternalApi.Services
     /// </summary>
     public class CachedCurrencyService : ICachedCurrencyService
     {
-        private readonly IAppDbContext _appDbContext;
+        private readonly AppDbContext _appDbContext;
         private readonly ICurrencyApi _currencyAPI;
         private readonly IMemoryCache _memoryCache;
         private readonly ISettingsService _settingsService;
@@ -29,7 +29,7 @@ namespace InternalApi.Services
         /// <param name="memoryCache">Кеш памяти</param>
         /// <param name="settings">Настройки приложения</param>
         /// <param name="settingsService">Сервис настроек приложения из базы данных</param>
-        public CachedCurrencyService(IAppDbContext appDbContext,
+        public CachedCurrencyService(AppDbContext appDbContext,
             CurrencyHttpClient currencyAPI,
             IMemoryCache memoryCache,
             ISettingsService settingsService,

@@ -12,7 +12,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Interfaces
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>избранные курсы валют</returns>
-        Task<IEnumerable<GetFavoredCurrencyResponse>> GetFavoriteCurrenciesAsync(CancellationToken cancellationToken);
+        Task<GetFavoredCurrencyResponse[]> GetFavoriteCurrenciesAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Получить избранный курс валюты по названию

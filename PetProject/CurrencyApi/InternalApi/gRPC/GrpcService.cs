@@ -8,7 +8,7 @@ namespace InternalApi.gRPC
     /// <summary>
     /// gRPC сервис для передачи данных о курсах валют
     /// </summary>
-    public class GrpcService : GrpcDocument.GrpcDocumentBase
+    public class GrpcService : CurrencyApi.CurrencyApiBase
     {
         private readonly ICachedCurrencyService _cachedCurrencyApi;
         private readonly ICurrencyApi _currencyApi;

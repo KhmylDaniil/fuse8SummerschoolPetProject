@@ -9,13 +9,13 @@ namespace InternalApi.Services
     /// </summary>
     public class SettingsService: ISettingsService
     {
-        private readonly IAppDbContext _appDbContext;
+        private readonly AppDbContext _appDbContext;
 
         /// <summary>
         /// Конструктор для <see cref="SettingsService"/>
         /// </summary>
         /// <param name="appDbContext">Контекст базы данных</param>
-        public SettingsService(IAppDbContext appDbContext) => _appDbContext = appDbContext;
+        public SettingsService(AppDbContext appDbContext) => _appDbContext = appDbContext;
 
         /// <summary>
         /// Получение настроек из базы данных

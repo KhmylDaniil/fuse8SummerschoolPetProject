@@ -12,7 +12,7 @@
     </PropertyGroup>
 
 	<ItemGroup>
-		<Protobuf Include="protos\GrpcDocument.proto" GprsServices="Client" />
+		<Protobuf Include="protos\CurrencyApi.proto" GprsServices="Client" />
 	</ItemGroup>
 
     <ItemGroup>
@@ -45,12 +45,6 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Protobuf Include="protos\GrpcDocument.proto">
-        <GprsServices>Server</GprsServices>
-      </Protobuf>
     </ItemGroup>
 
 </Project>

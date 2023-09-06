@@ -57,11 +57,5 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities
             Currency = currency;
             BaseCurrency = baseCurrency;
         }
-
-        /// <summary>
-        /// Вывод ответа в контроллер
-        /// </summary>
-        /// <returns></returns>
-        public GetFavoredCurrencyResponse ToResponse() => new(Name, Currency, BaseCurrency);
     }
 }

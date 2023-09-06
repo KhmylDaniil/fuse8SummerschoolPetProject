@@ -30,8 +30,6 @@ public class Startup
     /// <param name="services">Коллекция сервисов</param>
     public void ConfigureServices(IServiceCollection services)
 	{
-        services.Configure<CurrencySettings>(_configuration.GetRequiredSection("CurrencySettings"));
-
         services.AddControllers(opt => opt.Filters.Add(typeof(ExceptionFilter)))
             .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
@@ -62,7 +60,7 @@ public class Startup
                 return auditEvent.ToJson();
             }));
 
-		services.AddGrpcClient<GrpcDocument.GrpcDocumentClient>(c => 
+		services.AddGrpcClient<CurrencyApi.CurrencyApiClient>(c => 
             c.Address = new Uri(_configuration.GetValue<string>("GrpcServiceAddress")))
 			    .AddAuditHandler(a => a.IncludeRequestBody());
 
@@ -79,7 +77,6 @@ public class Startup
             .UseSnakeCaseNamingConvention();
         });
 
-        services.AddScoped<IAppDbContext, AppDbContext>();
 		services.AddTransient<ISettingsService, SettingsService>();
         services.AddTransient<IFavoriteCurrenciesService, FavoriteCurrenciesService>();
 

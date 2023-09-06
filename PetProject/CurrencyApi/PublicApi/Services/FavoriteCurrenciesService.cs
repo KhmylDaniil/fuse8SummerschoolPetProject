@@ -10,24 +10,24 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
     /// </summary>
     public class FavoriteCurrenciesService: IFavoriteCurrenciesService
     {
-        private readonly IAppDbContext _appDbContext;
+        private readonly AppDbContext _appDbContext;
 
         /// <summary>
         /// Конструктор для <see cref="FavoriteCurrenciesService"/>
         /// </summary>
         /// <param name="appDbContext">Контекст базы данных</param>
-        public FavoriteCurrenciesService(IAppDbContext appDbContext) => _appDbContext = appDbContext;
+        public FavoriteCurrenciesService(AppDbContext appDbContext) => _appDbContext = appDbContext;
 
         /// <summary>
         /// Получить все избранные курсы валют
         /// </summary>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns>избранные курсы валют</returns>
-        public async Task<IEnumerable<GetFavoredCurrencyResponse>> GetFavoriteCurrenciesAsync(CancellationToken cancellationToken)
+        public async Task<GetFavoredCurrencyResponse[]> GetFavoriteCurrenciesAsync(CancellationToken cancellationToken)
         {
-            var result = await _appDbContext.FavoriteCurrencies.AsNoTracking().ToListAsync(cancellationToken);
+            var result = await _appDbContext.FavoriteCurrencies.AsNoTracking().ToArrayAsync(cancellationToken);
 
-            return result.Select(fc => fc.ToResponse()).ToList();
+            return result.Select(fc => new GetFavoredCurrencyResponse(fc)).ToArray();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
             var result = await _appDbContext.FavoriteCurrencies.AsNoTracking().FirstOrDefaultAsync(fc => fc.Name == name, cancellationToken)
                 ?? throw new ArgumentException(Exceptions.ExceptionMessages.FavCurNotFound);
 
-            return result.ToResponse();
+            return new GetFavoredCurrencyResponse(result);
         }
             
         /// <summary>

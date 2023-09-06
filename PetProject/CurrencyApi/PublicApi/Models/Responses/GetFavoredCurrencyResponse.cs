@@ -1,4 +1,6 @@
-﻿namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses
+﻿using Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Entities;
+
+namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Models.Responses
 {
     /// <summary>
     /// Ответ на запрос избранного курса валюты
@@ -16,6 +18,17 @@
             Name = name;
             Currency = currency;
             BaseCurrency = baseCurrency;
+        }
+
+        /// <summary>
+        /// Конструктор для <see cref="GetFavoredCurrencyResponse"/>
+        /// </summary>
+        /// <param name="favoriteCurrency">Избранная валюта</param>
+        public GetFavoredCurrencyResponse(FavoriteCurrency favoriteCurrency)
+        {
+            Name = favoriteCurrency.Name;
+            Currency = favoriteCurrency.Currency;
+            BaseCurrency = favoriteCurrency.BaseCurrency;
         }
 
         /// <summary>

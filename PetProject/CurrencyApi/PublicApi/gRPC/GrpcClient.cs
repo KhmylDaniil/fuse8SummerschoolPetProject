@@ -9,7 +9,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
     /// </summary>
     public class GrpcClient : IGrpcClient
     {
-        private readonly GrpcDocument.GrpcDocumentClient _grpcClient;
+        private readonly CurrencyApi.CurrencyApiClient _grpcClient;
         private readonly ISettingsService _settingsService;
         private readonly IFavoriteCurrenciesService _favoriteCurrenciesService;
 
@@ -19,7 +19,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         /// <param name="grpcClient">Клиент gRPC</param>
         /// <param name="favoriteCurrenciesService">Сервис работы с избранными курсами валют</param>
         /// <param name="settingsService">Сервис работы с настройками</param>
-        public GrpcClient(GrpcDocument.GrpcDocumentClient grpcClient,
+        public GrpcClient(CurrencyApi.CurrencyApiClient grpcClient,
             IFavoriteCurrenciesService favoriteCurrenciesService,
             ISettingsService settingsService)
         {

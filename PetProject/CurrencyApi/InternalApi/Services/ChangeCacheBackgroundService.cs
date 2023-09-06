@@ -37,7 +37,7 @@ namespace InternalApi.Services
         {
             using var scope = _serviceProvider.CreateScope();
 
-            var dbContext = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var tasks = await dbContext.ChangeCacheTasks
                 .Where(t => t.CacheTaskStatus < Models.Entities.CacheTaskStatus.Success)
@@ -78,7 +78,7 @@ namespace InternalApi.Services
                 {
                     using var scope = _serviceProvider.CreateScope();
                     
-                    var dbContext = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
                     var task = await dbContext.ChangeCacheTasks.FirstOrDefaultAsync(x => x.Id == command.TaskId, stoppingToken);
 

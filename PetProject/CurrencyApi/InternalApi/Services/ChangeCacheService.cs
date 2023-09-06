@@ -11,7 +11,7 @@ namespace InternalApi.Services
     /// </summary>
     public class ChangeCacheService: IChangeCacheService
     {
-        private readonly IAppDbContext _appDbContext;
+        private readonly AppDbContext _appDbContext;
         private readonly ISettingsService _settingsService;
         private readonly IMemoryCache _memoryCache;
 
@@ -21,7 +21,7 @@ namespace InternalApi.Services
         /// <param name="appDbContext">Контекст базы данных</param>
         /// <param name="settingsService">Сервис настроек приложения</param>
         /// <param name="memoryCache">Кеш памяти</param>
-        public ChangeCacheService(IAppDbContext appDbContext, ISettingsService settingsService, IMemoryCache memoryCache)
+        public ChangeCacheService(AppDbContext appDbContext, ISettingsService settingsService, IMemoryCache memoryCache)
         {
             _appDbContext = appDbContext;
             _settingsService = settingsService;

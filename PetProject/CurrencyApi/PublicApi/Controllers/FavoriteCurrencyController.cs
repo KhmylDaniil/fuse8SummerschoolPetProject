@@ -31,7 +31,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Controllers
         /// </response>
         /// <returns>Все избранные курсы валют</returns>
         [HttpGet]
-        public Task<IEnumerable<GetFavoredCurrencyResponse>> GetAllFavoriveCurrenciesAsync(CancellationToken cancellationToken)
+        public Task<GetFavoredCurrencyResponse[]> GetAllFavoriveCurrenciesAsync(CancellationToken cancellationToken)
             => _service.GetFavoriteCurrenciesAsync(cancellationToken);
 
         /// <summary>

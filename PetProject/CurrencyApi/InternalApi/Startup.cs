@@ -77,8 +77,6 @@ public class Startup
             .UseSnakeCaseNamingConvention();
         });
 
-        services.AddScoped<IAppDbContext, AppDbContext>();
-
         Configuration.Setup().UseSerilog(config => config.Message(
             auditEvent =>
             {
