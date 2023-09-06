@@ -36,7 +36,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         /// <returns>Ответ на запрос курса валюты</returns>
         public async Task<GetCurrencyResponse> GetCurrencyResponseAsync(CurrencyCode? currencyCode, CancellationToken cancellationToken)
         {
-            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settings = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             currencyCode ??= settings.DefaultCurrency;
 
@@ -60,7 +60,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
 
             var response = await _grpcClient.GetLatestFavoriteCurrencyAsyncAsync(favCurrencyRequest, cancellationToken: cancellationToken);
 
-            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settings = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             return new GetFavoredCurrencyValueResponse(
                 name: name,
@@ -89,7 +89,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
 
             var response = await _grpcClient.GetHistoricalFavoriteCurrencyAsyncAsync(favCurrencyRequest, cancellationToken: cancellationToken);
 
-            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settings = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             return new GetFavoredCurrencyValueResponse(
                 name: favCurrency.Name,
@@ -114,7 +114,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
             };
             var response = await _grpcClient.GetHistoricalAsyncAsync(currencyRequest, cancellationToken: cancellationToken);
 
-            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settings = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             return new GetCurrencyHistoricalResponse
             {
@@ -133,7 +133,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.gRPC
         {
             var response = await _grpcClient.GetSettingsAsyncAsync(new SettingsRequest(), cancellationToken: cancellationToken);
 
-            var settings = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settings = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             return new GetSettingsResponse
             {

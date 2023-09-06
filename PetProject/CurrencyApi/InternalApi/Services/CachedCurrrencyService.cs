@@ -1,5 +1,4 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
-using Fuse8_ByteMinds.SummerSchool.InternalApi.Models;
 using InternalApi.Interfaces;
 using InternalApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -56,14 +55,16 @@ namespace InternalApi.Services
 
             DateTime actualityDateTime = date.ToDateTime(new TimeOnly(0, 0), DateTimeKind.Utc);
 
-            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CurrenciesOnDate? cachedOutput)
+            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CachedCurrenciesOnDate? cachedOutput)
                 && actualityDateTime >= cachedOutput?.Date
                 && actualityDateTime.AddDays(1) <= cachedOutput?.Date)
                     data = cachedOutput;
 
             data ??= await _appDbContext.CurrenciesOnDates
                 .Where(c => c.Date >= actualityDateTime && c.Date <= actualityDateTime.AddDays(1))
-                .OrderBy(c => c.Date).LastOrDefaultAsync(cancellationToken);
+                .OrderBy(c => c.Date)
+                .AsNoTracking()
+                .LastOrDefaultAsync(cancellationToken);
 
             if (data == null)
             {
@@ -89,10 +90,10 @@ namespace InternalApi.Services
         {
             CurrenciesOnDate? currenciesOnDate = null;
 
-            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CurrenciesOnDate? cachedOutput) && DateTime.UtcNow - cachedOutput?.Date <= new TimeSpan(2, 0, 0))
+            if (_memoryCache.TryGetValue(Constants.CashedCurrencyData, out CachedCurrenciesOnDate? cachedOutput) && DateTime.UtcNow - cachedOutput?.Date <= new TimeSpan(2, 0, 0))
                 currenciesOnDate = cachedOutput;
 
-            currenciesOnDate ??= await _appDbContext.CurrenciesOnDates.OrderBy(c => c.Date).LastOrDefaultAsync(cancellationToken);
+            currenciesOnDate ??= await _appDbContext.CurrenciesOnDates.OrderBy(c => c.Date).AsNoTracking().LastOrDefaultAsync(cancellationToken);
 
             if (currenciesOnDate == null)
             {
@@ -103,10 +104,11 @@ namespace InternalApi.Services
                 currenciesOnDate = new CurrenciesOnDate { Date = DateTime.UtcNow, Currencies = currencies };
 
                 _appDbContext.CurrenciesOnDates.Add(currenciesOnDate);
+
                 await _appDbContext.SaveChangesAsync(cancellationToken);
             }
 
-            _memoryCache.Set(Constants.CashedCurrencyData, currenciesOnDate);
+            _memoryCache.Set(Constants.CashedCurrencyData, new CachedCurrenciesOnDate(currenciesOnDate));
 
             return FindCurrencyByCode(currencyCode, currenciesOnDate, dontRound);
         }
@@ -122,7 +124,7 @@ namespace InternalApi.Services
         {
             var currencyToCacheBaseCurrencyDTO = await GetCurrentCurrencyAsync(currency, cancellationToken, dontRound: true);
 
-            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settingsFromDb = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             if (baseCurrency == settingsFromDb.BaseCurrency)
                 return currencyToCacheBaseCurrencyDTO.Value;
@@ -144,7 +146,7 @@ namespace InternalApi.Services
         {
             var currencyToCacheBaseCurrencyDTO = await GetCurrencyOnDateAsync(currency, date, cancellationToken, dontRound: true);
 
-            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settingsFromDb = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             if (baseCurrency == settingsFromDb.BaseCurrency)
                 return currencyToCacheBaseCurrencyDTO.Value;
@@ -179,12 +181,12 @@ namespace InternalApi.Services
         /// <returns></returns>
         private async Task WaitIfChangeCacheTaskIsProcessingAsync(CancellationToken cancellationToken)
         {
-            if (!await _appDbContext.ChangeCacheTasks.AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
+            if (!await _appDbContext.ChangeCacheTasks.AsNoTracking().AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
                 return;
 
             await Task.Delay(10_000, cancellationToken);
 
-            if (await _appDbContext.ChangeCacheTasks.AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
+            if (await _appDbContext.ChangeCacheTasks.AsNoTracking().AnyAsync(t => t.CacheTaskStatus < CacheTaskStatus.Success, cancellationToken))
                 throw new ArgumentException("Превышено время ожидания работы задачи по пересчету кеша и смене базовой валюты.");
         }
     }

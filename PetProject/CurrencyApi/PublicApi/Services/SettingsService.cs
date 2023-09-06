@@ -49,13 +49,28 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
         }
 
         /// <summary>
-        /// Получение настроек из базы данных
+        /// Получить настройки из базы данных с отслеживанием изменений
         /// </summary>
         /// <param name="cancellationToken">токен отмены</param>
         /// <returns>Настройки приложения</returns>
         public async Task<Settings> GetSettingsAsync(CancellationToken cancellationToken)
         {
             var settings = await _appDbContext.Settings.ToListAsync(cancellationToken);
+
+            if (settings.Count != 1)
+                throw new ArgumentException(Exceptions.ExceptionMessages.NotSingleSettings);
+
+            return settings[0];
+        }
+
+        /// <summary>
+        /// Получить настройки из базы данных без отслеживания изменений
+        /// </summary>
+        /// <param name="cancellationToken">токен отмены</param>
+        /// <returns>Настройки приложения</returns>
+        public async Task<Settings> GetSettingsAsNoTrackingAsync(CancellationToken cancellationToken)
+        {
+            var settings = await _appDbContext.Settings.AsNoTracking().ToListAsync(cancellationToken);
 
             if (settings.Count != 1)
                 throw new ArgumentException(Exceptions.ExceptionMessages.NotSingleSettings);

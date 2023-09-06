@@ -61,7 +61,7 @@ namespace InternalApi.Services
         {
             await CheckRequestLimitAsync(cancellationToken);
 
-            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settingsFromDb = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             string url = $"latest?base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
 
@@ -82,7 +82,7 @@ namespace InternalApi.Services
         {
             await CheckRequestLimitAsync(cancellationToken);
 
-            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settingsFromDb = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             string url = $"historical?&date={date}" +
                 $"&base_currency={Enum.GetName(settingsFromDb.BaseCurrency).ToUpper()}&apikey={_settings.ApiKey}";
@@ -133,7 +133,7 @@ namespace InternalApi.Services
 
             var response = JsonSerializer.Deserialize<ExternalApiResponseStatus>(responseJson);
 
-            var settingsFromDb = await _settingsService.GetSettingsAsync(cancellationToken);
+            var settingsFromDb = await _settingsService.GetSettingsAsNoTrackingAsync(cancellationToken);
 
             return new GetSettingsResponse()
             {

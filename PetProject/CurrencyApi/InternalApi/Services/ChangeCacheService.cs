@@ -1,4 +1,5 @@
 ﻿using Fuse8_ByteMinds.SummerSchool.InternalApi;
+using Fuse8_ByteMinds.SummerSchool.InternalApi.Models.ExternalApiResponseModels;
 using InternalApi.Interfaces;
 using InternalApi.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -66,20 +67,19 @@ namespace InternalApi.Services
             {
                 var cache = await _appDbContext.CurrenciesOnDates.OrderByDescending(x => x.Date).ToListAsync(cancellationToken);
 
+                _appDbContext.UpdateRange(cache);
+
                 foreach (var item in cache)
                 {
                     var crossCourse = item.Currencies.First(c => c.Code.Equals(Enum.GetName(task.NewBaseCurrency), StringComparison.OrdinalIgnoreCase)).Value;
 
-                    for (int i = 0; i < item.Currencies.Length; i++)
-                        item.Currencies[i].Value = item.Currencies[i].Value / crossCourse;
-
-                    //вызов сеттера для обновления json поля хранения данных
-                    item.Currencies = item.Currencies;
+                    foreach (var currency in item.Currencies)
+                        currency.Value /= crossCourse;
                 }
 
                 settings.BaseCurrency = task.NewBaseCurrency;
             }
-            
+
             task.CacheTaskStatus = CacheTaskStatus.Success;
 
             _memoryCache.Remove(Constants.CashedCurrencyData);

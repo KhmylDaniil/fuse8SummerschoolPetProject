@@ -111,7 +111,7 @@ namespace Fuse8_ByteMinds.SummerSchool.PublicApi.Services
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException(Exceptions.ExceptionMessages.NameCantBeNull);
             
-            if (await _appDbContext.FavoriteCurrencies.AnyAsync(fc => fc.Name == name
+            if (await _appDbContext.FavoriteCurrencies.AsNoTracking().AnyAsync(fc => fc.Name == name
                 || (fc.Currency == currency && fc.BaseCurrency == baseCurrency), cancellationToken))
                 throw new ArgumentException(Exceptions.ExceptionMessages.NotUniqueFavCur);
         }

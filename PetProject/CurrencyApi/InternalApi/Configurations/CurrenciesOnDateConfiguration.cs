@@ -14,9 +14,7 @@ namespace InternalApi.Configurations
         {
             builder.HasKey(x => x.Date);
 
-            builder.Property(x => x.CurrenciesAsJson).HasColumnType("jsonb");
-
-            builder.Ignore(x => x.Currencies);
+            builder.Property(x => x.Currencies).HasColumnType("jsonb");
         }
     }
 }
