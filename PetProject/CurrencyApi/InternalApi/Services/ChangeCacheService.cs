@@ -67,8 +67,6 @@ namespace InternalApi.Services
             {
                 var cache = await _appDbContext.CurrenciesOnDates.OrderByDescending(x => x.Date).ToListAsync(cancellationToken);
 
-                _appDbContext.UpdateRange(cache);
-
                 foreach (var item in cache)
                 {
                     var crossCourse = item.Currencies.First(c => c.Code.Equals(Enum.GetName(task.NewBaseCurrency), StringComparison.OrdinalIgnoreCase)).Value;
@@ -78,6 +76,8 @@ namespace InternalApi.Services
                 }
 
                 settings.BaseCurrency = task.NewBaseCurrency;
+
+                _appDbContext.UpdateRange(cache);
             }
 
             task.CacheTaskStatus = CacheTaskStatus.Success;
