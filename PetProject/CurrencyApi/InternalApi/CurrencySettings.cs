@@ -1,0 +1,33 @@
+﻿namespace Fuse8_ByteMinds.SummerSchool.InternalApi
+{
+    /// <summary>
+    /// Настройки приложения по валюте
+    /// </summary>
+    public class CurrencySettings
+    {
+        /// <summary>
+        /// Валюта по умолчанию
+        /// </summary>
+        public string? DefaultCurrency { get; init; }
+
+        /// <summary>
+        /// Количество знаков после запятой, до которого следует округлять значение курса валют
+        /// </summary>
+        public int CurrencyRoundCount { get; init; }
+
+        /// <summary>
+        /// Апи ключ
+        /// </summary>
+        public string? ApiKey { get; init; }
+
+        /// <summary>
+        /// Максимальное количество запросов в месяц
+        /// </summary>
+        public int MaxRequestsPerMonth { get; init; }
+
+        /// <summary>
+        /// Адрес внешнего апи
+        /// </summary>
+        public string BaseAddress { get; init; }
+    }
+}
